@@ -382,4 +382,254 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
+import * as schema from "@shared/schema";
+
+export class PostgresStorage implements IStorage {
+  private db;
+
+  constructor(databaseUrl: string) {
+    const sql = neon(databaseUrl);
+    this.db = drizzle(sql, { schema });
+  }
+
+  // Users
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await this.db.select().from(schema.users).where(eq(schema.users.id, id));
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await this.db.select().from(schema.users).where(eq(schema.users.username, username));
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await this.db.insert(schema.users).values(insertUser).returning();
+    return result[0];
+  }
+
+  // Feligreses
+  async getAllFeligreses(): Promise<Feligres[]> {
+    return await this.db.select().from(schema.feligreses);
+  }
+
+  async getFeligres(id: string): Promise<Feligres | undefined> {
+    const result = await this.db.select().from(schema.feligreses).where(eq(schema.feligreses.id, id));
+    return result[0];
+  }
+
+  async createFeligres(insertFeligres: InsertFeligres): Promise<Feligres> {
+    const result = await this.db.insert(schema.feligreses).values(insertFeligres).returning();
+    return result[0];
+  }
+
+  async updateFeligres(id: string, insertFeligres: InsertFeligres): Promise<Feligres | undefined> {
+    const result = await this.db.update(schema.feligreses)
+      .set({ ...insertFeligres, updatedAt: new Date() })
+      .where(eq(schema.feligreses.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteFeligres(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.feligreses).where(eq(schema.feligreses.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Sacramentos
+  async getAllSacramentos(): Promise<Sacramento[]> {
+    return await this.db.select().from(schema.sacramentos);
+  }
+
+  async getSacramento(id: string): Promise<Sacramento | undefined> {
+    const result = await this.db.select().from(schema.sacramentos).where(eq(schema.sacramentos.id, id));
+    return result[0];
+  }
+
+  async createSacramento(insertSacramento: InsertSacramento): Promise<Sacramento> {
+    const result = await this.db.insert(schema.sacramentos).values(insertSacramento).returning();
+    return result[0];
+  }
+
+  async updateSacramento(id: string, insertSacramento: InsertSacramento): Promise<Sacramento | undefined> {
+    const result = await this.db.update(schema.sacramentos)
+      .set(insertSacramento)
+      .where(eq(schema.sacramentos.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteSacramento(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.sacramentos).where(eq(schema.sacramentos.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Grupos
+  async getAllGrupos(): Promise<Grupo[]> {
+    return await this.db.select().from(schema.grupos);
+  }
+
+  async getGrupo(id: string): Promise<Grupo | undefined> {
+    const result = await this.db.select().from(schema.grupos).where(eq(schema.grupos.id, id));
+    return result[0];
+  }
+
+  async createGrupo(insertGrupo: InsertGrupo): Promise<Grupo> {
+    const result = await this.db.insert(schema.grupos).values(insertGrupo).returning();
+    return result[0];
+  }
+
+  async updateGrupo(id: string, insertGrupo: InsertGrupo): Promise<Grupo | undefined> {
+    const result = await this.db.update(schema.grupos)
+      .set(insertGrupo)
+      .where(eq(schema.grupos.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteGrupo(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.grupos).where(eq(schema.grupos.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Miembros de Grupo
+  async getAllMiembrosGrupo(): Promise<MiembroGrupo[]> {
+    return await this.db.select().from(schema.miembrosGrupo);
+  }
+
+  async getMiembrosGrupoPorGrupo(grupoId: string): Promise<MiembroGrupo[]> {
+    return await this.db.select().from(schema.miembrosGrupo).where(eq(schema.miembrosGrupo.grupoId, grupoId));
+  }
+
+  async createMiembroGrupo(insertMiembro: InsertMiembroGrupo): Promise<MiembroGrupo> {
+    const result = await this.db.insert(schema.miembrosGrupo).values(insertMiembro).returning();
+    return result[0];
+  }
+
+  async deleteMiembroGrupo(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.miembrosGrupo).where(eq(schema.miembrosGrupo.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Eventos
+  async getAllEventos(): Promise<Evento[]> {
+    return await this.db.select().from(schema.eventos);
+  }
+
+  async getEvento(id: string): Promise<Evento | undefined> {
+    const result = await this.db.select().from(schema.eventos).where(eq(schema.eventos.id, id));
+    return result[0];
+  }
+
+  async createEvento(insertEvento: InsertEvento): Promise<Evento> {
+    const result = await this.db.insert(schema.eventos).values(insertEvento).returning();
+    return result[0];
+  }
+
+  async updateEvento(id: string, insertEvento: InsertEvento): Promise<Evento | undefined> {
+    const result = await this.db.update(schema.eventos)
+      .set(insertEvento)
+      .where(eq(schema.eventos.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteEvento(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.eventos).where(eq(schema.eventos.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Voluntarios
+  async getAllVoluntarios(): Promise<Voluntario[]> {
+    return await this.db.select().from(schema.voluntarios);
+  }
+
+  async getVoluntario(id: string): Promise<Voluntario | undefined> {
+    const result = await this.db.select().from(schema.voluntarios).where(eq(schema.voluntarios.id, id));
+    return result[0];
+  }
+
+  async getVoluntariosPorEvento(eventoId: string): Promise<Voluntario[]> {
+    return await this.db.select().from(schema.voluntarios).where(eq(schema.voluntarios.eventoId, eventoId));
+  }
+
+  async createVoluntario(insertVoluntario: InsertVoluntario): Promise<Voluntario> {
+    const result = await this.db.insert(schema.voluntarios).values(insertVoluntario).returning();
+    return result[0];
+  }
+
+  async updateVoluntario(id: string, insertVoluntario: InsertVoluntario): Promise<Voluntario | undefined> {
+    const result = await this.db.update(schema.voluntarios)
+      .set(insertVoluntario)
+      .where(eq(schema.voluntarios.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteVoluntario(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.voluntarios).where(eq(schema.voluntarios.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Export/Import
+  async exportAll() {
+    const [feligreses, sacramentos, grupos, miembrosGrupo, eventos, voluntarios] = await Promise.all([
+      this.db.select().from(schema.feligreses),
+      this.db.select().from(schema.sacramentos),
+      this.db.select().from(schema.grupos),
+      this.db.select().from(schema.miembrosGrupo),
+      this.db.select().from(schema.eventos),
+      this.db.select().from(schema.voluntarios),
+    ]);
+
+    return { feligreses, sacramentos, grupos, miembrosGrupo, eventos, voluntarios };
+  }
+
+  async importAll(data: {
+    feligreses?: Feligres[];
+    sacramentos?: Sacramento[];
+    grupos?: Grupo[];
+    miembrosGrupo?: MiembroGrupo[];
+    eventos?: Evento[];
+    voluntarios?: Voluntario[];
+  }) {
+    // Delete existing data
+    await Promise.all([
+      this.db.delete(schema.voluntarios),
+      this.db.delete(schema.miembrosGrupo),
+      this.db.delete(schema.eventos),
+      this.db.delete(schema.sacramentos),
+      this.db.delete(schema.grupos),
+      this.db.delete(schema.feligreses),
+    ]);
+
+    // Insert new data
+    if (data.feligreses && data.feligreses.length > 0) {
+      await this.db.insert(schema.feligreses).values(data.feligreses);
+    }
+    if (data.sacramentos && data.sacramentos.length > 0) {
+      await this.db.insert(schema.sacramentos).values(data.sacramentos);
+    }
+    if (data.grupos && data.grupos.length > 0) {
+      await this.db.insert(schema.grupos).values(data.grupos);
+    }
+    if (data.miembrosGrupo && data.miembrosGrupo.length > 0) {
+      await this.db.insert(schema.miembrosGrupo).values(data.miembrosGrupo);
+    }
+    if (data.eventos && data.eventos.length > 0) {
+      await this.db.insert(schema.eventos).values(data.eventos);
+    }
+    if (data.voluntarios && data.voluntarios.length > 0) {
+      await this.db.insert(schema.voluntarios).values(data.voluntarios);
+    }
+  }
+}
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
+export const storage = new PostgresStorage(process.env.DATABASE_URL);
