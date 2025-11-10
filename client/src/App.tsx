@@ -19,6 +19,8 @@ import Sacramentos from "@/pages/sacramentos";
 import Grupos from "@/pages/grupos";
 import Eventos from "@/pages/eventos";
 import Voluntarios from "@/pages/voluntarios";
+import Contabilidad from "@/pages/contabilidad";
+import Inventario from "@/pages/inventario";
 import Respaldo from "@/pages/respaldo";
 import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
@@ -72,6 +74,12 @@ function Router() {
       </Route>
       <Route path="/voluntarios">
         {() => <ProtectedRoute component={Voluntarios} />}
+      </Route>
+      <Route path="/contabilidad">
+        {() => <ProtectedRoute component={Contabilidad} />}
+      </Route>
+      <Route path="/inventario">
+        {() => <ProtectedRoute component={Inventario} />}
       </Route>
       <Route path="/respaldo">
         {() => <ProtectedRoute component={Respaldo} />}

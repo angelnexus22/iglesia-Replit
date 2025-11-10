@@ -189,3 +189,153 @@ export const insertVoluntarioSchema = createInsertSchema(voluntarios).omit({
 
 export type InsertVoluntario = z.infer<typeof insertVoluntarioSchema>;
 export type Voluntario = typeof voluntarios.$inferSelect;
+
+// ============================================
+// CONTABILIDAD - CATEGORÍAS FINANCIERAS
+// ============================================
+export const categoriasFinancieras = pgTable("categorias_financieras", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nombre: text("nombre").notNull(),
+  tipo: text("tipo").notNull(), // "ingreso" o "egreso"
+  descripcion: text("descripcion"),
+  activo: boolean("activo").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCategoriaFinancieraSchema = createInsertSchema(categoriasFinancieras).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCategoriaFinanciera = z.infer<typeof insertCategoriaFinancieraSchema>;
+export type CategoriaFinanciera = typeof categoriasFinancieras.$inferSelect;
+
+// ============================================
+// CONTABILIDAD - TRANSACCIONES
+// ============================================
+export const transacciones = pgTable("transacciones", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tipo: text("tipo").notNull(), // "ingreso" o "egreso"
+  monto: text("monto").notNull(), // Almacenado como texto para precisión decimal
+  categoriaId: varchar("categoria_id").notNull(),
+  categoriaNombre: text("categoria_nombre").notNull(),
+  fecha: date("fecha").notNull(),
+  descripcion: text("descripcion").notNull(),
+  metodoPago: text("metodo_pago"), // "efectivo", "transferencia", "cheque", "tarjeta"
+  referencia: text("referencia"), // Número de cheque, referencia de transferencia, etc.
+  registradoPorId: varchar("registrado_por_id"),
+  registradoPorNombre: text("registrado_por_nombre"),
+  notas: text("notas"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTransaccionSchema = createInsertSchema(transacciones).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertTransaccion = z.infer<typeof insertTransaccionSchema>;
+export type Transaccion = typeof transacciones.$inferSelect;
+
+// ============================================
+// CONTABILIDAD - PRESUPUESTOS
+// ============================================
+export const presupuestos = pgTable("presupuestos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  categoriaId: varchar("categoria_id").notNull(),
+  categoriaNombre: text("categoria_nombre").notNull(),
+  mes: text("mes").notNull(), // Formato: "2025-01"
+  montoPresupuestado: text("monto_presupuestado").notNull(),
+  notas: text("notas"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPresupuestoSchema = createInsertSchema(presupuestos).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPresupuesto = z.infer<typeof insertPresupuestoSchema>;
+export type Presupuesto = typeof presupuestos.$inferSelect;
+
+// ============================================
+// INVENTARIO - ARTÍCULOS
+// ============================================
+export const articulosInventario = pgTable("articulos_inventario", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nombre: text("nombre").notNull(),
+  categoria: text("categoria").notNull(), // "liturgico", "equipo", "consumible", "mobiliario"
+  descripcion: text("descripcion"),
+  unidadMedida: text("unidad_medida").notNull(), // "piezas", "litros", "kilogramos", etc.
+  stockActual: text("stock_actual").notNull().default("0"),
+  stockMinimo: text("stock_minimo").notNull().default("0"),
+  ubicacion: text("ubicacion"), // Dónde se guarda
+  valorUnitario: text("valor_unitario"), // Para valorización de inventario
+  activo: boolean("activo").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertArticuloInventarioSchema = createInsertSchema(articulosInventario).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertArticuloInventario = z.infer<typeof insertArticuloInventarioSchema>;
+export type ArticuloInventario = typeof articulosInventario.$inferSelect;
+
+// ============================================
+// INVENTARIO - MOVIMIENTOS
+// ============================================
+export const movimientosInventario = pgTable("movimientos_inventario", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  articuloId: varchar("articulo_id").notNull(),
+  articuloNombre: text("articulo_nombre").notNull(),
+  tipo: text("tipo").notNull(), // "entrada" o "salida"
+  cantidad: text("cantidad").notNull(),
+  fecha: date("fecha").notNull(),
+  motivo: text("motivo").notNull(), // "compra", "donacion", "uso_liturgico", "evento", "prestamo", "deterioro"
+  referencia: text("referencia"), // Factura, evento, etc.
+  registradoPorId: varchar("registrado_por_id"),
+  registradoPorNombre: text("registrado_por_nombre"),
+  notas: text("notas"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertMovimientoInventarioSchema = createInsertSchema(movimientosInventario).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertMovimientoInventario = z.infer<typeof insertMovimientoInventarioSchema>;
+export type MovimientoInventario = typeof movimientosInventario.$inferSelect;
+
+// ============================================
+// INVENTARIO - PRÉSTAMOS
+// ============================================
+export const prestamos = pgTable("prestamos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  articuloId: varchar("articulo_id").notNull(),
+  articuloNombre: text("articulo_nombre").notNull(),
+  cantidad: text("cantidad").notNull(),
+  prestatarioNombre: text("prestatario_nombre").notNull(),
+  prestatarioTelefono: text("prestatario_telefono"),
+  fechaPrestamo: date("fecha_prestamo").notNull(),
+  fechaDevolucionProgramada: date("fecha_devolucion_programada").notNull(),
+  fechaDevolucionReal: date("fecha_devolucion_real"),
+  motivo: text("motivo").notNull(), // Para qué se prestó
+  estado: text("estado").notNull().default("prestado"), // "prestado", "devuelto", "vencido"
+  registradoPorId: varchar("registrado_por_id"),
+  registradoPorNombre: text("registrado_por_nombre"),
+  notas: text("notas"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPrestamoSchema = createInsertSchema(prestamos).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPrestamo = z.infer<typeof insertPrestamoSchema>;
+export type Prestamo = typeof prestamos.$inferSelect;

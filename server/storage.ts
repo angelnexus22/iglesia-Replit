@@ -6,7 +6,13 @@ import type {
   Grupo, InsertGrupo,
   MiembroGrupo, InsertMiembroGrupo,
   Evento, InsertEvento,
-  Voluntario, InsertVoluntario
+  Voluntario, InsertVoluntario,
+  CategoriaFinanciera, InsertCategoriaFinanciera,
+  Transaccion, InsertTransaccion,
+  Presupuesto, InsertPresupuesto,
+  ArticuloInventario, InsertArticuloInventario,
+  MovimientoInventario, InsertMovimientoInventario,
+  Prestamo, InsertPrestamo
 } from "@shared/schema";
 
 export interface IStorage {
@@ -56,6 +62,49 @@ export interface IStorage {
   createVoluntario(voluntario: InsertVoluntario): Promise<Voluntario>;
   updateVoluntario(id: string, voluntario: InsertVoluntario): Promise<Voluntario | undefined>;
   deleteVoluntario(id: string): Promise<boolean>;
+
+  // Categorías Financieras
+  getAllCategoriasFinancieras(): Promise<CategoriaFinanciera[]>;
+  getCategoriaFinanciera(id: string): Promise<CategoriaFinanciera | undefined>;
+  createCategoriaFinanciera(categoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera>;
+  updateCategoriaFinanciera(id: string, categoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera | undefined>;
+  deleteCategoriaFinanciera(id: string): Promise<boolean>;
+
+  // Transacciones
+  getAllTransacciones(): Promise<Transaccion[]>;
+  getTransaccion(id: string): Promise<Transaccion | undefined>;
+  createTransaccion(transaccion: InsertTransaccion): Promise<Transaccion>;
+  updateTransaccion(id: string, transaccion: InsertTransaccion): Promise<Transaccion | undefined>;
+  deleteTransaccion(id: string): Promise<boolean>;
+
+  // Presupuestos
+  getAllPresupuestos(): Promise<Presupuesto[]>;
+  getPresupuesto(id: string): Promise<Presupuesto | undefined>;
+  getPresupuestosPorMes(mes: string): Promise<Presupuesto[]>;
+  createPresupuesto(presupuesto: InsertPresupuesto): Promise<Presupuesto>;
+  updatePresupuesto(id: string, presupuesto: InsertPresupuesto): Promise<Presupuesto | undefined>;
+  deletePresupuesto(id: string): Promise<boolean>;
+
+  // Artículos Inventario
+  getAllArticulosInventario(): Promise<ArticuloInventario[]>;
+  getArticuloInventario(id: string): Promise<ArticuloInventario | undefined>;
+  createArticuloInventario(articulo: InsertArticuloInventario): Promise<ArticuloInventario>;
+  updateArticuloInventario(id: string, articulo: InsertArticuloInventario): Promise<ArticuloInventario | undefined>;
+  deleteArticuloInventario(id: string): Promise<boolean>;
+
+  // Movimientos Inventario
+  getAllMovimientosInventario(): Promise<MovimientoInventario[]>;
+  getMovimientoInventario(id: string): Promise<MovimientoInventario | undefined>;
+  getMovimientosPorArticulo(articuloId: string): Promise<MovimientoInventario[]>;
+  createMovimientoInventario(movimiento: InsertMovimientoInventario): Promise<MovimientoInventario>;
+
+  // Préstamos
+  getAllPrestamos(): Promise<Prestamo[]>;
+  getPrestamo(id: string): Promise<Prestamo | undefined>;
+  getPrestamosPorEstado(estado: string): Promise<Prestamo[]>;
+  createPrestamo(prestamo: InsertPrestamo): Promise<Prestamo>;
+  updatePrestamo(id: string, prestamo: InsertPrestamo): Promise<Prestamo | undefined>;
+  deletePrestamo(id: string): Promise<boolean>;
 
   // Export/Import
   exportAll(): Promise<{
@@ -571,6 +620,173 @@ export class PostgresStorage implements IStorage {
 
   async deleteVoluntario(id: string): Promise<boolean> {
     const result = await this.db.delete(schema.voluntarios).where(eq(schema.voluntarios.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Categorías Financieras
+  async getAllCategoriasFinancieras(): Promise<CategoriaFinanciera[]> {
+    return await this.db.select().from(schema.categoriasFinancieras);
+  }
+
+  async getCategoriaFinanciera(id: string): Promise<CategoriaFinanciera | undefined> {
+    const result = await this.db.select().from(schema.categoriasFinancieras).where(eq(schema.categoriasFinancieras.id, id));
+    return result[0];
+  }
+
+  async createCategoriaFinanciera(insertCategoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera> {
+    const result = await this.db.insert(schema.categoriasFinancieras).values(insertCategoria).returning();
+    return result[0];
+  }
+
+  async updateCategoriaFinanciera(id: string, insertCategoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera | undefined> {
+    const result = await this.db.update(schema.categoriasFinancieras)
+      .set(insertCategoria)
+      .where(eq(schema.categoriasFinancieras.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteCategoriaFinanciera(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.categoriasFinancieras).where(eq(schema.categoriasFinancieras.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Transacciones
+  async getAllTransacciones(): Promise<Transaccion[]> {
+    return await this.db.select().from(schema.transacciones);
+  }
+
+  async getTransaccion(id: string): Promise<Transaccion | undefined> {
+    const result = await this.db.select().from(schema.transacciones).where(eq(schema.transacciones.id, id));
+    return result[0];
+  }
+
+  async createTransaccion(insertTransaccion: InsertTransaccion): Promise<Transaccion> {
+    const result = await this.db.insert(schema.transacciones).values(insertTransaccion).returning();
+    return result[0];
+  }
+
+  async updateTransaccion(id: string, insertTransaccion: InsertTransaccion): Promise<Transaccion | undefined> {
+    const result = await this.db.update(schema.transacciones)
+      .set(insertTransaccion)
+      .where(eq(schema.transacciones.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteTransaccion(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.transacciones).where(eq(schema.transacciones.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Presupuestos
+  async getAllPresupuestos(): Promise<Presupuesto[]> {
+    return await this.db.select().from(schema.presupuestos);
+  }
+
+  async getPresupuesto(id: string): Promise<Presupuesto | undefined> {
+    const result = await this.db.select().from(schema.presupuestos).where(eq(schema.presupuestos.id, id));
+    return result[0];
+  }
+
+  async getPresupuestosPorMes(mes: string): Promise<Presupuesto[]> {
+    return await this.db.select().from(schema.presupuestos).where(eq(schema.presupuestos.mes, mes));
+  }
+
+  async createPresupuesto(insertPresupuesto: InsertPresupuesto): Promise<Presupuesto> {
+    const result = await this.db.insert(schema.presupuestos).values(insertPresupuesto).returning();
+    return result[0];
+  }
+
+  async updatePresupuesto(id: string, insertPresupuesto: InsertPresupuesto): Promise<Presupuesto | undefined> {
+    const result = await this.db.update(schema.presupuestos)
+      .set(insertPresupuesto)
+      .where(eq(schema.presupuestos.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deletePresupuesto(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.presupuestos).where(eq(schema.presupuestos.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Artículos Inventario
+  async getAllArticulosInventario(): Promise<ArticuloInventario[]> {
+    return await this.db.select().from(schema.articulosInventario);
+  }
+
+  async getArticuloInventario(id: string): Promise<ArticuloInventario | undefined> {
+    const result = await this.db.select().from(schema.articulosInventario).where(eq(schema.articulosInventario.id, id));
+    return result[0];
+  }
+
+  async createArticuloInventario(insertArticulo: InsertArticuloInventario): Promise<ArticuloInventario> {
+    const result = await this.db.insert(schema.articulosInventario).values(insertArticulo).returning();
+    return result[0];
+  }
+
+  async updateArticuloInventario(id: string, insertArticulo: InsertArticuloInventario): Promise<ArticuloInventario | undefined> {
+    const result = await this.db.update(schema.articulosInventario)
+      .set({ ...insertArticulo, updatedAt: new Date() })
+      .where(eq(schema.articulosInventario.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteArticuloInventario(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.articulosInventario).where(eq(schema.articulosInventario.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Movimientos Inventario
+  async getAllMovimientosInventario(): Promise<MovimientoInventario[]> {
+    return await this.db.select().from(schema.movimientosInventario);
+  }
+
+  async getMovimientoInventario(id: string): Promise<MovimientoInventario | undefined> {
+    const result = await this.db.select().from(schema.movimientosInventario).where(eq(schema.movimientosInventario.id, id));
+    return result[0];
+  }
+
+  async getMovimientosPorArticulo(articuloId: string): Promise<MovimientoInventario[]> {
+    return await this.db.select().from(schema.movimientosInventario).where(eq(schema.movimientosInventario.articuloId, articuloId));
+  }
+
+  async createMovimientoInventario(insertMovimiento: InsertMovimientoInventario): Promise<MovimientoInventario> {
+    const result = await this.db.insert(schema.movimientosInventario).values(insertMovimiento).returning();
+    return result[0];
+  }
+
+  // Préstamos
+  async getAllPrestamos(): Promise<Prestamo[]> {
+    return await this.db.select().from(schema.prestamos);
+  }
+
+  async getPrestamo(id: string): Promise<Prestamo | undefined> {
+    const result = await this.db.select().from(schema.prestamos).where(eq(schema.prestamos.id, id));
+    return result[0];
+  }
+
+  async getPrestamosPorEstado(estado: string): Promise<Prestamo[]> {
+    return await this.db.select().from(schema.prestamos).where(eq(schema.prestamos.estado, estado));
+  }
+
+  async createPrestamo(insertPrestamo: InsertPrestamo): Promise<Prestamo> {
+    const result = await this.db.insert(schema.prestamos).values(insertPrestamo).returning();
+    return result[0];
+  }
+
+  async updatePrestamo(id: string, insertPrestamo: InsertPrestamo): Promise<Prestamo | undefined> {
+    const result = await this.db.update(schema.prestamos)
+      .set(insertPrestamo)
+      .where(eq(schema.prestamos.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deletePrestamo(id: string): Promise<boolean> {
+    const result = await this.db.delete(schema.prestamos).where(eq(schema.prestamos.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
   }
 

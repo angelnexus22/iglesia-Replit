@@ -9,6 +9,12 @@ import {
   insertEventoSchema,
   insertVoluntarioSchema,
   insertUserSchema,
+  insertCategoriaFinancieraSchema,
+  insertTransaccionSchema,
+  insertPresupuestoSchema,
+  insertArticuloInventarioSchema,
+  insertMovimientoInventarioSchema,
+  insertPrestamoSchema,
 } from "@shared/schema";
 import bcrypt from "bcrypt";
 import { generateCertificadoPDF } from "./utils/certificadoPDF";
@@ -477,6 +483,362 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Error al eliminar voluntario" });
+    }
+  });
+
+  // ============================================
+  // CATEGORÍAS FINANCIERAS
+  // ============================================
+  app.get("/api/categorias-financieras", async (req, res) => {
+    try {
+      const categorias = await storage.getAllCategoriasFinancieras();
+      res.json(categorias);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener categorías financieras" });
+    }
+  });
+
+  app.get("/api/categorias-financieras/:id", async (req, res) => {
+    try {
+      const categoria = await storage.getCategoriaFinanciera(req.params.id);
+      if (!categoria) {
+        return res.status(404).json({ error: "Categoría financiera no encontrada" });
+      }
+      res.json(categoria);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener categoría financiera" });
+    }
+  });
+
+  app.post("/api/categorias-financieras", async (req, res) => {
+    try {
+      const data = insertCategoriaFinancieraSchema.parse(req.body);
+      const categoria = await storage.createCategoriaFinanciera(data);
+      res.status(201).json(categoria);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.patch("/api/categorias-financieras/:id", async (req, res) => {
+    try {
+      const data = insertCategoriaFinancieraSchema.parse(req.body);
+      const categoria = await storage.updateCategoriaFinanciera(req.params.id, data);
+      if (!categoria) {
+        return res.status(404).json({ error: "Categoría financiera no encontrada" });
+      }
+      res.json(categoria);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.delete("/api/categorias-financieras/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteCategoriaFinanciera(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Categoría financiera no encontrada" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error al eliminar categoría financiera" });
+    }
+  });
+
+  // ============================================
+  // TRANSACCIONES
+  // ============================================
+  app.get("/api/transacciones", async (req, res) => {
+    try {
+      const transacciones = await storage.getAllTransacciones();
+      res.json(transacciones);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener transacciones" });
+    }
+  });
+
+  app.get("/api/transacciones/:id", async (req, res) => {
+    try {
+      const transaccion = await storage.getTransaccion(req.params.id);
+      if (!transaccion) {
+        return res.status(404).json({ error: "Transacción no encontrada" });
+      }
+      res.json(transaccion);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener transacción" });
+    }
+  });
+
+  app.post("/api/transacciones", async (req, res) => {
+    try {
+      const data = insertTransaccionSchema.parse(req.body);
+      const transaccion = await storage.createTransaccion(data);
+      res.status(201).json(transaccion);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.patch("/api/transacciones/:id", async (req, res) => {
+    try {
+      const data = insertTransaccionSchema.parse(req.body);
+      const transaccion = await storage.updateTransaccion(req.params.id, data);
+      if (!transaccion) {
+        return res.status(404).json({ error: "Transacción no encontrada" });
+      }
+      res.json(transaccion);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.delete("/api/transacciones/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteTransaccion(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Transacción no encontrada" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error al eliminar transacción" });
+    }
+  });
+
+  // ============================================
+  // PRESUPUESTOS
+  // ============================================
+  app.get("/api/presupuestos", async (req, res) => {
+    try {
+      const presupuestos = await storage.getAllPresupuestos();
+      res.json(presupuestos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener presupuestos" });
+    }
+  });
+
+  app.get("/api/presupuestos/:id", async (req, res) => {
+    try {
+      const presupuesto = await storage.getPresupuesto(req.params.id);
+      if (!presupuesto) {
+        return res.status(404).json({ error: "Presupuesto no encontrado" });
+      }
+      res.json(presupuesto);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener presupuesto" });
+    }
+  });
+
+  app.get("/api/presupuestos/mes/:mes", async (req, res) => {
+    try {
+      const presupuestos = await storage.getPresupuestosPorMes(req.params.mes);
+      res.json(presupuestos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener presupuestos por mes" });
+    }
+  });
+
+  app.post("/api/presupuestos", async (req, res) => {
+    try {
+      const data = insertPresupuestoSchema.parse(req.body);
+      const presupuesto = await storage.createPresupuesto(data);
+      res.status(201).json(presupuesto);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.patch("/api/presupuestos/:id", async (req, res) => {
+    try {
+      const data = insertPresupuestoSchema.parse(req.body);
+      const presupuesto = await storage.updatePresupuesto(req.params.id, data);
+      if (!presupuesto) {
+        return res.status(404).json({ error: "Presupuesto no encontrado" });
+      }
+      res.json(presupuesto);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.delete("/api/presupuestos/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deletePresupuesto(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Presupuesto no encontrado" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error al eliminar presupuesto" });
+    }
+  });
+
+  // ============================================
+  // ARTÍCULOS INVENTARIO
+  // ============================================
+  app.get("/api/articulos-inventario", async (req, res) => {
+    try {
+      const articulos = await storage.getAllArticulosInventario();
+      res.json(articulos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener artículos de inventario" });
+    }
+  });
+
+  app.get("/api/articulos-inventario/:id", async (req, res) => {
+    try {
+      const articulo = await storage.getArticuloInventario(req.params.id);
+      if (!articulo) {
+        return res.status(404).json({ error: "Artículo de inventario no encontrado" });
+      }
+      res.json(articulo);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener artículo de inventario" });
+    }
+  });
+
+  app.post("/api/articulos-inventario", async (req, res) => {
+    try {
+      const data = insertArticuloInventarioSchema.parse(req.body);
+      const articulo = await storage.createArticuloInventario(data);
+      res.status(201).json(articulo);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.patch("/api/articulos-inventario/:id", async (req, res) => {
+    try {
+      const data = insertArticuloInventarioSchema.parse(req.body);
+      const articulo = await storage.updateArticuloInventario(req.params.id, data);
+      if (!articulo) {
+        return res.status(404).json({ error: "Artículo de inventario no encontrado" });
+      }
+      res.json(articulo);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.delete("/api/articulos-inventario/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteArticuloInventario(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Artículo de inventario no encontrado" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error al eliminar artículo de inventario" });
+    }
+  });
+
+  // ============================================
+  // MOVIMIENTOS INVENTARIO
+  // ============================================
+  app.get("/api/movimientos-inventario", async (req, res) => {
+    try {
+      const movimientos = await storage.getAllMovimientosInventario();
+      res.json(movimientos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener movimientos de inventario" });
+    }
+  });
+
+  app.get("/api/movimientos-inventario/:id", async (req, res) => {
+    try {
+      const movimiento = await storage.getMovimientoInventario(req.params.id);
+      if (!movimiento) {
+        return res.status(404).json({ error: "Movimiento de inventario no encontrado" });
+      }
+      res.json(movimiento);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener movimiento de inventario" });
+    }
+  });
+
+  app.get("/api/movimientos-inventario/articulo/:articuloId", async (req, res) => {
+    try {
+      const movimientos = await storage.getMovimientosPorArticulo(req.params.articuloId);
+      res.json(movimientos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener movimientos por artículo" });
+    }
+  });
+
+  app.post("/api/movimientos-inventario", async (req, res) => {
+    try {
+      const data = insertMovimientoInventarioSchema.parse(req.body);
+      const movimiento = await storage.createMovimientoInventario(data);
+      res.status(201).json(movimiento);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  // ============================================
+  // PRÉSTAMOS
+  // ============================================
+  app.get("/api/prestamos", async (req, res) => {
+    try {
+      const prestamos = await storage.getAllPrestamos();
+      res.json(prestamos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener préstamos" });
+    }
+  });
+
+  app.get("/api/prestamos/:id", async (req, res) => {
+    try {
+      const prestamo = await storage.getPrestamo(req.params.id);
+      if (!prestamo) {
+        return res.status(404).json({ error: "Préstamo no encontrado" });
+      }
+      res.json(prestamo);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener préstamo" });
+    }
+  });
+
+  app.get("/api/prestamos/estado/:estado", async (req, res) => {
+    try {
+      const prestamos = await storage.getPrestamosPorEstado(req.params.estado);
+      res.json(prestamos);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener préstamos por estado" });
+    }
+  });
+
+  app.post("/api/prestamos", async (req, res) => {
+    try {
+      const data = insertPrestamoSchema.parse(req.body);
+      const prestamo = await storage.createPrestamo(data);
+      res.status(201).json(prestamo);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.patch("/api/prestamos/:id", async (req, res) => {
+    try {
+      const data = insertPrestamoSchema.parse(req.body);
+      const prestamo = await storage.updatePrestamo(req.params.id, data);
+      if (!prestamo) {
+        return res.status(404).json({ error: "Préstamo no encontrado" });
+      }
+      res.json(prestamo);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
+    }
+  });
+
+  app.delete("/api/prestamos/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deletePrestamo(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Préstamo no encontrado" });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ error: "Error al eliminar préstamo" });
     }
   });
 
