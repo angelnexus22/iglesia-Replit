@@ -8,9 +8,111 @@ import {
   insertMiembroGrupoSchema,
   insertEventoSchema,
   insertVoluntarioSchema,
+  insertUserSchema,
 } from "@shared/schema";
+import bcrypt from "bcrypt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // ============================================
+  // AUTENTICACIÓN
+  // ============================================
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, password, nombre, rol } = insertUserSchema.parse(req.body);
+      
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "El nombre de usuario ya está en uso" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await storage.createUser({
+        username,
+        password: hashedPassword,
+        nombre,
+        rol,
+      });
+
+      req.session!.userId = user.id;
+      req.session!.userRole = user.rol;
+      req.session!.userName = user.nombre;
+
+      res.status(201).json({
+        id: user.id,
+        username: user.username,
+        nombre: user.nombre,
+        rol: user.rol,
+      });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Error al registrar usuario" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const loginSchema = insertUserSchema.pick({ username: true, password: true });
+      const { username, password } = loginSchema.parse(req.body);
+
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        return res.status(401).json({ error: "Usuario o contraseña incorrectos" });
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ error: "Usuario o contraseña incorrectos" });
+      }
+
+      req.session!.userId = user.id;
+      req.session!.userRole = user.rol;
+      req.session!.userName = user.nombre;
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        nombre: user.nombre,
+        rol: user.rol,
+      });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({ error: "Datos inválidos" });
+      }
+      res.status(500).json({ error: "Error al iniciar sesión" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session?.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error al cerrar sesión" });
+      }
+      res.clearCookie("connect.sid");
+      res.json({ message: "Sesión cerrada exitosamente" });
+    });
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "No autenticado" });
+    }
+
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        nombre: user.nombre,
+        rol: user.rol,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener información del usuario" });
+    }
+  });
+
   // ============================================
   // FELIGRESES
   // ============================================
