@@ -6,12 +6,11 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: ".5625rem", /* 9px */
+        lg: ".5rem", /* 8px - suave pero visible */
         md: ".375rem", /* 6px */
-        sm: ".1875rem", /* 3px */
+        sm: ".25rem", /* 4px */
       },
       colors: {
-        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
@@ -75,17 +74,18 @@ export default {
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
           border: "var(--sidebar-accent-border)"
         },
-        status: {
-          online: "rgb(34 197 94)",
-          away: "rgb(245 158 11)",
-          busy: "rgb(239 68 68)",
-          offline: "rgb(156 163 175)",
-        },
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        serif: ["var(--font-serif)"],
-        mono: ["var(--font-mono)"],
+        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["Menlo", "Monaco", "Courier New", "monospace"],
+      },
+      fontSize: {
+        base: ["1rem", { lineHeight: "1.5" }],
+        lg: ["1.125rem", { lineHeight: "1.5" }],
+        xl: ["1.25rem", { lineHeight: "1.4" }],
+        "2xl": ["1.5rem", { lineHeight: "1.3" }],
+        "3xl": ["1.875rem", { lineHeight: "1.25" }],
+        "4xl": ["2.25rem", { lineHeight: "1.2" }],
       },
       keyframes: {
         "accordion-down": {
