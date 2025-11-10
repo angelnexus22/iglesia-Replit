@@ -39,7 +39,7 @@ Preferred communication style: Simple, everyday language.
 
 **Data Validation**: Zod schemas shared between client and server via the `/shared` directory for type safety and validation consistency
 
-**Storage Layer**: Abstract storage interface (`IStorage`) allowing flexibility in data persistence implementation. Currently designed for in-memory storage with the structure prepared for database integration.
+**Storage Layer**: PostgreSQL storage implementation using Drizzle ORM for all CRUD operations. Complete migration from in-memory storage to persistent database completed.
 
 **Development Setup**: Vite middleware integration for hot module replacement in development, with separate build process for production deployment
 
@@ -65,11 +65,43 @@ Preferred communication style: Simple, everyday language.
 
 **Offline-First Considerations**: Architecture prepared for local-first data storage with eventual database synchronization capability.
 
+**Recent Implementations**:
+- ✅ PostgreSQL database with Drizzle ORM (November 2025)
+- ✅ PDF certificate generation with PDFKit for all sacrament types (November 2025)
+- ✅ Production-ready authentication system with express-session and connect-pg-simple (November 2025)
+
 ### Authentication and Authorization
 
-**Current State**: User schema includes role-based fields (parroco/parish priest, coordinador/coordinator, voluntario/volunteer) but authentication middleware is not yet implemented.
+**Implementation Status**: ✅ **Production-ready authentication system fully implemented**
 
-**Planned Approach**: Session-based authentication with express-session and connect-pg-simple for PostgreSQL session storage (dependencies already included).
+**Security Features**:
+- Session-based authentication with express-session and connect-pg-simple for PostgreSQL session storage
+- Password hashing with bcrypt (10 salt rounds)
+- Environment-based SESSION_SECRET (required for server startup)
+- Secure cookie configuration (httpOnly, sameSite: "lax", 24-hour maxAge)
+- Automatic session table creation in PostgreSQL
+- Session persistence across server restarts
+- Proper cookie cleanup on logout
+
+**Endpoints**:
+- POST /api/auth/register - User registration with password hashing
+- POST /api/auth/login - Login with Zod-validated credentials
+- POST /api/auth/logout - Session destruction and cookie cleanup
+- GET /api/auth/me - Current user session retrieval
+
+**Frontend Protection**:
+- ProtectedRoute component with wouter-based redirects
+- useAuth hook with conditional query execution to avoid unnecessary 401s on /login
+- Automatic redirect to /login for unauthenticated access
+- User info display in header (name, role, logout button)
+
+**Role-Based Access Control**:
+- Three roles: parroco (parish priest), coordinador (coordinator), voluntario (volunteer)
+- Middleware functions available: requireAuth, requireRole
+- Role validation stored in session for fast access
+- Ready for endpoint-level permission enforcement
+
+**Testing**: All authentication flows tested and verified end-to-end including register, login, protected routes, logout, and security measures.
 
 ### External Dependencies
 
@@ -110,6 +142,6 @@ Preferred communication style: Simple, everyday language.
 1. **Monorepo Structure**: Client, server, and shared code in a single repository with path aliases for clean imports
 2. **Shared Type Safety**: Database schemas, Zod validators, and TypeScript types shared between frontend and backend via the `/shared` directory
 3. **Offline-First Design**: Application architecture supports working without internet connectivity, with data export/import functionality for backup
-4. **No Authentication Wall**: Current implementation allows direct access to functionality (suitable for trusted local network deployment)
+4. **Production-Ready Authentication**: Session-based authentication with role-based access control (parroco, coordinador, voluntario) and secure password management
 5. **Spanish Language**: All UI text, comments, and documentation in Spanish to match the target user base
 6. **Performance Priority**: Minimal dependencies, no custom fonts, system-level design choices optimized for low-end devices
