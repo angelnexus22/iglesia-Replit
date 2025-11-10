@@ -768,6 +768,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const data = insertMovimientoInventarioSchema.parse(req.body);
       const movimiento = await storage.createMovimientoInventario(data);
+      
+      // Actualizar stock del artículo
+      const articulo = await storage.getArticuloInventario(data.articuloId);
+      if (articulo) {
+        const stockActual = parseInt(articulo.stockActual || "0");
+        const cantidad = parseInt(data.cantidad);
+        const nuevoStock = data.tipo === "entrada" 
+          ? stockActual + cantidad 
+          : stockActual - cantidad;
+        
+        await storage.updateArticuloInventario(data.articuloId, {
+          stockActual: nuevoStock.toString()
+        });
+      }
+      
       res.status(201).json(movimiento);
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Datos inválidos" });
