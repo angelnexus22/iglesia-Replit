@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, TrendingUp, TrendingDown, DollarSign, Edit } from "lucide-react";
+import { Plus, Search, TrendingUp, TrendingDown, DollarSign, Edit, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,7 @@ import {
 } from "@shared/schema";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { exportTransaccionesCSV, exportReporteFinancieroCSV } from "@/lib/export-utils";
 
 const formatCurrency = (amount: string) => {
   const numericAmount = parseFloat(amount);
@@ -252,17 +253,40 @@ export default function Contabilidad() {
             data-testid="input-search-transacciones"
           />
         </div>
-        <Dialog open={dialogOpen} onOpenChange={handleCloseDialog}>
-          <DialogTrigger asChild>
-            <Button 
-              size="lg" 
-              className="h-12 px-6"
-              data-testid="button-add-transaccion"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Registrar Transacción
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            size="lg" 
+            className="h-12 px-4"
+            onClick={() => exportTransaccionesCSV(transacciones)}
+            disabled={transacciones.length === 0}
+            data-testid="button-export-csv"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Exportar CSV
+          </Button>
+          <Button 
+            variant="outline"
+            size="lg" 
+            className="h-12 px-4"
+            onClick={() => exportReporteFinancieroCSV(transacciones, categorias)}
+            disabled={transacciones.length === 0}
+            data-testid="button-export-reporte"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            Reporte Completo
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={handleCloseDialog}>
+            <DialogTrigger asChild>
+              <Button 
+                size="lg" 
+                className="h-12 px-6"
+                data-testid="button-add-transaccion"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Registrar Transacción
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl">
@@ -468,6 +492,7 @@ export default function Contabilidad() {
             </Form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
