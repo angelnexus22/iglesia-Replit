@@ -1,4 +1,4 @@
-import { Home, Users, BookOpen, UsersRound, Calendar, Heart, Database, DollarSign, Package } from "lucide-react";
+import { Home, Users, BookOpen, UsersRound, Calendar, Heart, Database, DollarSign, Package, BarChart3 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -91,6 +91,14 @@ export function AppSidebar() {
                   <Link href="/contabilidad" data-testid="link-contabilidad">
                     <DollarSign className="w-5 h-5" />
                     <span className="text-base">Contabilidad</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={location === "/dashboard-financiero"}>
+                  <Link href="/dashboard-financiero" data-testid="link-dashboard-financiero">
+                    <BarChart3 className="w-5 h-5" />
+                    <span className="text-base">Dashboard Financiero</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -20,6 +20,7 @@ import Grupos from "@/pages/grupos";
 import Eventos from "@/pages/eventos";
 import Voluntarios from "@/pages/voluntarios";
 import Contabilidad from "@/pages/contabilidad";
+import DashboardFinanciero from "@/pages/dashboard-financiero";
 import Inventario from "@/pages/inventario";
 import Respaldo from "@/pages/respaldo";
 import Login from "@/pages/login";
@@ -77,6 +78,9 @@ function Router() {
       </Route>
       <Route path="/contabilidad">
         {() => <ProtectedRoute component={Contabilidad} />}
+      </Route>
+      <Route path="/dashboard-financiero">
+        {() => <ProtectedRoute component={DashboardFinanciero} />}
       </Route>
       <Route path="/inventario">
         {() => <ProtectedRoute component={Inventario} />}
