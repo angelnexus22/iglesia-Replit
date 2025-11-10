@@ -11,6 +11,8 @@ import {
   insertUserSchema,
 } from "@shared/schema";
 import bcrypt from "bcrypt";
+import { generateCertificadoPDF } from "./utils/certificadoPDF";
+import { seedDatabase } from "./seed-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================
@@ -496,6 +498,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true, message: "Datos importados exitosamente" });
     } catch (error) {
       res.status(500).json({ error: "Error al importar datos" });
+    }
+  });
+
+  // ============================================
+  // UTILIDADES Y DESARROLLO
+  // ============================================
+  // NOTA: Este endpoint solo está habilitado en desarrollo y requiere autenticación de párroco
+  app.post("/api/seed", async (req, res) => {
+    try {
+      // Solo permitir en desarrollo
+      if (process.env.NODE_ENV === "production") {
+        return res.status(403).json({ error: "Endpoint no disponible en producción" });
+      }
+
+      // Requerir autenticación de párroco
+      if (!req.session?.userId || req.session?.userRole !== "parroco") {
+        return res.status(401).json({ error: "Se requiere autenticación de párroco" });
+      }
+
+      await seedDatabase();
+      res.json({ message: "Base de datos llenada con datos de ejemplo exitosamente" });
+    } catch (error: any) {
+      console.error("Error al ejecutar seed:", error);
+      res.status(500).json({ error: "Error al llenar la base de datos" });
     }
   });
 
