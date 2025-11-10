@@ -129,6 +129,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generar certificado PDF de sacramento
+  app.get("/api/sacramentos/:id/certificado", async (req, res) => {
+    try {
+      const sacramento = await storage.getSacramento(req.params.id);
+      if (!sacramento) {
+        return res.status(404).json({ error: "Sacramento no encontrado" });
+      }
+
+      const { generarCertificadoPDF } = await import("./utils/certificadoPDF");
+      const doc = generarCertificadoPDF(sacramento);
+
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="certificado-${sacramento.tipo}-${sacramento.nombreFeligres.replace(/\s+/g, "_")}.pdf"`
+      );
+
+      doc.pipe(res);
+      doc.end();
+    } catch (error: any) {
+      res.status(500).json({ error: error.message || "Error al generar certificado" });
+    }
+  });
+
   // ============================================
   // GRUPOS
   // ============================================

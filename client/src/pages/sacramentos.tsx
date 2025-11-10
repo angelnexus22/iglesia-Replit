@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, BookOpen, Edit } from "lucide-react";
+import { Plus, Search, BookOpen, Edit, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -512,29 +512,41 @@ export default function Sacramentos() {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Fecha:</span>{" "}
-                  {new Date(sacramento.fecha).toLocaleDateString('es-MX', { 
-                    day: 'numeric', 
-                    month: 'long', 
-                    year: 'numeric' 
-                  })}
-                </p>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Ministro:</span> {sacramento.ministro}
-                </p>
-                {sacramento.nombrePadrino && (
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
                   <p className="text-sm">
-                    <span className="text-muted-foreground">Padrino:</span> {sacramento.nombrePadrino}
+                    <span className="text-muted-foreground">Fecha:</span>{" "}
+                    {new Date(sacramento.fecha).toLocaleDateString('es-MX', { 
+                      day: 'numeric', 
+                      month: 'long', 
+                      year: 'numeric' 
+                    })}
                   </p>
-                )}
-                {sacramento.libroNumero && (
                   <p className="text-sm">
-                    <span className="text-muted-foreground">Libro:</span> {sacramento.libroNumero}
-                    {sacramento.folioNumero && `, Folio: ${sacramento.folioNumero}`}
+                    <span className="text-muted-foreground">Ministro:</span> {sacramento.ministro}
                   </p>
-                )}
+                  {sacramento.nombrePadrino && (
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Padrino:</span> {sacramento.nombrePadrino}
+                    </p>
+                  )}
+                  {sacramento.libroNumero && (
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Libro:</span> {sacramento.libroNumero}
+                      {sacramento.folioNumero && `, Folio: ${sacramento.folioNumero}`}
+                    </p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => window.open(`/api/sacramentos/${sacramento.id}/certificado`, '_blank')}
+                  data-testid={`button-download-certificado-${sacramento.id}`}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Descargar Certificado
+                </Button>
               </CardContent>
             </Card>
           ))}
