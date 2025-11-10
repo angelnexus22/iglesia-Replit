@@ -1,0 +1,116 @@
+Funcionalidades Propuestas para la Aplicación Parroquial
+
+Dado que se trata de un proyecto inicial, podemos definir un conjunto de funcionalidades esenciales que ofrezcan valor inmediato a las parroquias en su gestión interna y conexión con grupos pastorales/voluntariado. Estas son algunas ideas de módulos y características a incluir:
+
+Directorio de Feligreses y Miembros: Base de datos de miembros de la parroquia con sus datos de contacto, familia, y quizás estado sacramental (si han recibido bautismo, confirmación, matrimonio, etc.). Esto facilita tener un registro unificado de la comunidad local. Herramientas como ChurchCRM priorizan esta función de gestionar miembros porque es fundamental
+github.com
+. La aplicación debe permitir búsquedas fáciles, filtrado por barrio o grupo, y exportación de datos cuando sea necesario (teniendo en cuenta protección de datos personales).
+
+Registro de Sacramentos: Un módulo para llevar el historial sacramental de la parroquia. Aquí se registrarían bautismos, primeras comuniones, confirmaciones, matrimonios y defunciones celebrados en la parroquia. Cada registro incluiría los datos relevantes (fechas, nombres de feligreses y padrinos, ministro celebrante, libro y folio, etc.). Esto permitiría generar partidas o constancias de sacramento de forma automatizada, similar a lo que hacía el software de TWG (que evitaba reescribir datos usando plantillas pre-llenadas
+theworkofgod.org
+). La aplicación podría producir PDF imprimibles con los certificados. Mantener estos registros digitalmente ayuda a la parroquia a encontrar datos históricamente sin buscar en libros físicos, y asegurar copias de seguridad de información vital.
+
+Gestión de Grupos y Ministerios: Funcionalidad para administrar los grupos parroquiales (por ejemplo: grupo de jóvenes, coro, catequistas, grupo de liturgia, legion de María, etc.). Cada grupo tendría su lista de miembros, un coordinador asignado y posiblemente un calendario de actividades. De esta manera, el párroco o administrador puede ver qué personas integran cada ministerio y quiénes son responsables. Esto también sirve para conectar con los voluntarios adecuados según actividad. Por ejemplo, ante un evento se puede consultar la lista de voluntarios disponibles en cierto grupo. Idealmente, cada líder de grupo podría tener un acceso (usuario interno) limitado solo a su grupo, para mantener actualizados a sus integrantes y comunicarse con ellos.
+
+Coordinación de Voluntariado y Eventos: Una funcionalidad clave es facilitar que la parroquia organice sus eventos y actividades (ej. kermesses, retiros, labores sociales, etc.) y gestione los voluntarios necesarios. Esto incluye:
+
+Calendario parroquial: calendario compartido donde se programen eventos (desde fiestas patronales, reuniones de consejo, hasta horarios especiales de misa). Este calendario puede ser público o interno. Un calendario en línea es una característica común en muchos sistemas
+capterra.mx
+capterra.mx
+.
+
+Publicación de oportunidades de voluntariado: por ejemplo, si se acerca una posada parroquial, el sistema podría listar qué se necesita (decoradores, ujieres, cocina, etc.) y permitir que miembros registrados se apunten como voluntarios. Cada voluntario registrado en la app podría tener un perfil indicando en qué áreas desea ayudar, facilitando la convocatoria.
+
+Programación de servidores litúrgicos: en el contexto católico, es útil programar quiénes servirán en las misas (lectores, ministros de comunión, monaguillos, coro). Un módulo podría asignar automáticamente o manualmente estos roles por fecha y misa, notificando a los involucrados.
+
+Seguimiento de asistencia y participación: para grupos de catequesis u otros ministerios, la aplicación podría llevar registro de asistencia a reuniones o formación, ayudando a los coordinadores a dar seguimiento a la participación activa
+capterra.mx
+.
+
+Comunicación Interna y con Feligreses: La aplicación debería facilitar la comunicación rápida dentro de la comunidad:
+
+Notificaciones/Anuncios: Permitir al administrador (párroco o secretario) enviar anuncios a todos los miembros o a ciertos grupos (por ejemplo, avisar de un cambio de horario de misa, o convocar a voluntarios). Esto se puede hacer vía correo electrónico integrado, SMS/WhatsApp (si se conecta a un servicio externo) o notificaciones push si se desarrolla también una app móvil en el futuro. Herramientas modernas como Bitrix24 enfatizan la integración de comunicación tipo red social y mensajería para mantener involucrada a la congregación
+capterra.mx
+.
+
+Portal o App para feligreses (futuro): Si bien inicialmente el proyecto está pensado para usuarios internos de la parroquia, a largo plazo se podría habilitar un portal sencillo para feligreses donde, por ejemplo, puedan actualizar sus datos, inscribirse en eventos o ver el calendario. Esto ampliaría el impacto, similar a cómo Appostolica acercó servicios a los fieles (aunque en nuestro caso sería a nivel parroquial local). Un portal así podría mostrar los horarios de misa, noticias parroquiales e incluso una sección de donativos en línea, replicando la idea de Appostolica de permitir donaciones digitalmente
+dallasnews.com
+ pero a escala local (por ejemplo para proyectos específicos de la parroquia).
+
+Gestión de Donativos y Contabilidad Básica: Muchas parroquias pequeñas llevan su contabilidad en libros simples o Excel. Un módulo financiero sencillo podría ser de gran ayuda, siempre y cuando no sea complejo de operar:
+
+Registro de ingresos y gastos: Permitir llevar las cuentas básicas de la parroquia, registrando donativos recibidos (diezmos, colectas, intenciones de misa, donaciones especiales) y gastos (servicios, mantenimiento, ayuda social, etc.). Se podrían generar reportes básicos mensuales para transparencia interna y para rendir cuentas a la diócesis o al consejo parroquial.
+
+Seguimiento de donantes: En relación con el directorio de feligreses, se podría asociar quién ha contribuido con qué (similar al seguimiento de diezmos). ChurchCRM, por ejemplo, incluye seguimiento de contribuciones y donantes
+github.com
+, y CHUMS permite rastrear donaciones con reportes detallados
+github.com
+. Esto sería opcional pero útil para agradecer a benefactores o emitir recibos si se requiere.
+
+Donaciones en línea: Integrar la posibilidad de donativos en línea directamente a la parroquia (via PayPal, Stripe u otro) sería innovador a nivel local. Dado que Appostolica ya maneja donaciones a nivel nacional
+dallasnews.com
+, nuestra aplicación podría complementarse permitiendo donativos específicos para, digamos, una campaña de la parroquia. Esto implicaría más consideraciones de seguridad y fiscales (en México, reportar al SAT como mencionó el arzobispo
+dallasnews.com
+), por lo que podría dejarse para etapas posteriores del proyecto.
+
+Permisos de Usuario y Seguridad: Implementar diferentes roles de usuario: por ejemplo, un rol Administrador parroquial (párroco/secretario con acceso total), Coordinador de grupo (acceso solo a su ministerio), Voluntario (acceso a su perfil y a inscripciones), etc. Esto mantiene la información sensible resguardada y evita errores. La seguridad de los datos debe ser prioritaria, respetando leyes de protección de datos personales. Al ser una plataforma open source multi-parroquia, cada parroquia (o diócesis) debe tener aislada su base de datos de miembros. Incluir autenticación robusta (idealmente con opciones de 2FA) y cifrado de datos sensibles (como información de contacto) para generar confianza en el sistema.
+
+En resumen, estas funcionalidades cubrirían gestión de personas, actividades y comunicación. Se recomienda iniciar con un núcleo básico (miembros, grupos, eventos) e ir expandiendo conforme se prueba en campo y se reciben sugerencias. Dado que será open source, otras personas podrían contribuir módulos como, por ejemplo, un seguimiento de catequesis (notas de los niños, lista de espera para sacramentos) u otros según las necesidades que descubran.
+
+Consideraciones de Arquitectura y Escalabilidad
+
+Pensando en que el proyecto pueda crecer y ser útil a múltiples parroquias, es esencial diseñar desde el inicio una arquitectura flexible y escalable. A continuación se proponen lineamientos arquitectónicos y tecnológicos:
+
+Enfoque Web Modular: Una arquitectura web resulta adecuada por accesibilidad multiplataforma. Un diseño clásico Modelo-Vista-Controlador (MVC) o basado en API REST puede funcionar bien. Por ejemplo, un backend en Python (Django/Flask) o Node.js (Express, Adonis, etc.) que exponga APIs, y un frontend web (HTML5/JavaScript con un framework moderno como React, Vue, Angular, o incluso una interfaz server-rendered simple). En etapas tempranas, se podría optar por una solución monolítica sencilla (para rapidez de desarrollo), pero separando claramente capas de lógica de negocio, acceso a datos y presentación, lo que facilitará futuras ampliaciones. Procurar que la interfaz sea responsiva (diseño adaptable a móviles), pues muchos usuarios internos podrían usar tablet o smartphone para acceder.
+
+Multi-tenant vs. Instancias independientes: Si se planea que múltiples parroquias usen la aplicación en una sola plataforma central (modelo multi-tenant), la arquitectura de datos debe soportar aislamiento. Esto significa que en la base de datos, la mayoría de las tablas tendrían un campo identificador de parroquia/organización, de modo que los datos de cada parroquia estén separados lógicamente. El sistema de autenticación también tendría que asociar cada usuario a su parroquia. Alternativamente, se podría desplegar instancias separadas por parroquia, pero eso complica mantenimiento y actualizaciones. Un enfoque multi-tenant bien diseñado permite escalar a muchas parroquias manteniendo una sola base de código y despliegue, lo cual es más manejable si el desarrollador (tú) va a operar los costos y hosting inicialmente. Tecnologías de containerización (Docker) podrían ayudar a portar la aplicación a distintos servidores si es necesario, pero al comienzo incluso se podría alojar en Replit o un VPS pequeño para pruebas con unas cuantas parroquias piloto (recordando que Rock RMS, por ejemplo, comenta que una instancia pequeña consume pocos recursos
+reddit.com
+, lo que sugiere que para unas pocas parroquias el requerimiento de hardware no sería elevado).
+
+Base de Datos y Persistencia: Usar una base de datos relacional robusta (MySQL/MariaDB, PostgreSQL) sería recomendable dado el tipo de datos relacionados (personas, grupos, eventos, donaciones). Estas BD son fiables y soportan transacciones (útil para integridad en registros sacramentales o contables). Si se quiere simplificar inicialmente, SQLite podría servir durante el desarrollo o para instancias locales sin servidor dedicado, aunque para múltiples usuarios concurrentes es mejor un motor cliente-servidor. Es importante definir un buen modelo entidad-relación: tablas para Personas, Familias, Sacramentos, Grupos, Eventos, Voluntarios, Donaciones, etc., con sus relaciones. Valida el esquema contra las funcionalidades planeadas, y deja margen para extensiones (por ejemplo, un campo genérico de "notas" en varias tablas para flexibilidad, o tablas de configuración para parroquia como logos, nombre, ubicaciones de capillas, etc.).
+
+Escalabilidad y Rendimiento: En principio, la carga de uso en una parroquia típica es baja (unos cientos de miembros, eventos semanales, transacciones simples). Sin embargo, si el sistema alojara decenas de parroquias, habría que considerar optimizaciones:
+
+Implementar caché para datos frecuentemente consultados (por ejemplo, listado de miembros) para reducir consultas repetitivas.
+
+Permitir escalamiento horizontal futuro: es decir, que el backend pueda correr en múltiples instancias detrás de un balanceador de carga si la demanda crece. Para esto se necesita que la aplicación sea stateless en la medida de lo posible (salvo la sesión de usuario, que se puede manejar con tokens JWT o almacenando sesión en un almacén compartido tipo Redis).
+
+Usar almacenamiento de archivos externo para documentos generados (ej: certificados PDF) o imágenes, de manera que no sobrecarguen el servidor principal. Un servicio de almacenamiento en la nube o un bucket S3 podría servir, aunque inicialmente también se puede guardar en el sistema de archivos del servidor con backups regulares.
+
+Monitoreo: implementar logging y quizás métricas (número de usuarios activos, tiempo de respuesta) para detectar cuellos de botella cuando se escale.
+
+Soporte Offline / Baja Conectividad: Dado que no todas las parroquias disponen de Internet estable o equipos modernos
+lsi2.ugr.es
+, sería valioso considerar modos de operación offline. Algunas opciones:
+
+Que la aplicación pueda instalarse localmente en una computadora de la parroquia (por ejemplo, empaquetar la app con un servidor local ligero). Esto se vincula con ofrecer la posibilidad de exportar e importar datos (por ejemplo en CSV o XML) para intercambiar información con la diócesis o con un servidor central cuando haya conexión. GestParr planteaba sincronizar datos con la curia diocesana, lo cual es avanzado, pero podríamos al menos permitir backups periódicos que se suban/download en USB.
+
+Desarrollar una Progressive Web App (PWA): si la interfaz web se diseña como PWA, podría tener cierto funcionamiento offline (caché de información reciente, colas de operaciones a sincronizar cuando vuelva la conexión). Esto es complejo de lograr para todas las funciones, pero quizás para consulta de directorio o calendario podría funcionar.
+
+Modo First Mobile: Asegurar que la aplicación corre bien en dispositivos móviles, ya que en comunidades sin PC disponible, el párroco o los líderes podrían usar su teléfono para acceder a la info. Un diseño simple, con botones grandes y sin sobrecargar de datos cada vista, ayudará en entornos de datos móviles limitados.
+
+Seguridad y Privacidad: Manejar datos de personas y sacramentos implica responsabilidad. La arquitectura debe incorporar:
+
+Control de acceso riguroso: autenticación segura (hash de contraseñas, manejo de sesiones) y autorización (verificar en cada acción que el usuario tenga permiso para esa parroquia y módulo). Por ejemplo, un coordinador de grupo no debería acceder a finanzas, etc.
+
+Cifrado de comunicaciones: Si se despliega en la web, usar HTTPS obligatorio. Si Replit o otro hosting no provee certificado automáticamente, considerar servicios como Cloudflare para asegurar el tránsito cifrado.
+
+Almacenamiento seguro: Datos sensibles (p.ej. listas de menores en catequesis) deben estar protegidos. Si hay datos especialmente confidenciales (como información financiera personal), evaluamos cifrado a nivel de campo en BD o al menos en backups.
+
+Respaldo regular: Implementar copias de seguridad automáticas de la base de datos, para prevenir pérdida de información (que sería grave por ejemplo si se pierden registros de bautismo). Esto se puede hacer con scripts en el servidor o utilizando servicios de backup gestionados.
+
+Cumplimiento legal: En México aplica la Ley Federal de Protección de Datos Personales; aunque las parroquias no son empresas, es buena práctica que la aplicación permita, por ejemplo, eliminar o exportar los datos de un feligrés si lo solicita (derecho ARCO). También, si se guardan datos de menores de edad (catecúmenos), tener consentimiento de padres. Todo esto implica que la app tenga opciones de administración para gestionar consentimiento y para eliminar datos obsoletos de forma segura.
+
+Tecnologías de Desarrollo en Replit: Dado que piensas desarrollar en Replit, conviene elegir stacks soportados allí. Replit permite correr proyectos en diversos lenguajes (Node.js, Python, PHP, etc.) con relativa facilidad. Por ejemplo, podrías crear rápidamente:
+
+Un backend Node.js + Express (JavaScript/TypeScript) con una base de datos SQLite para empezar (Replit incluso tiene "ReplDB" pero es muy básica; mejor usar SQLite o connectar a una pequeña DB externa).
+
+O un proyecto Python Flask que sirva páginas y use SQLite.
+
+Incluso es posible un stack PHP + MySQL en Replit para algo como ChurchCRM, pero para un proyecto nuevo tal vez conviene usar tecnologías más modernas o que domines.
+
+Replit facilita la colaboración en tiempo real y la implementación inicial sin tener que configurar un servidor propio. No obstante, para producción con usuarios reales, posiblemente querrás migrar a una plataforma más robusta (un servidor en la nube o un PaaS como Heroku, Railway, etc., dependiendo de costo). Mantén el código en un repositorio público (GitHub) desde el inicio, para que otros puedan verlo y contribuir. Documenta en el README cómo desplegar la aplicación (por ejemplo, cómo configurar variables de entorno, migrar la base de datos, etc.). Esto hará el proyecto verdaderamente útil para la comunidad open source eclesial.
+
+Extensibilidad mediante API: Plantea desde el diseño la posibilidad de exponer ciertos servicios vía API REST (o GraphQL) para futuros desarrollos. Por ejemplo, un endpoint para consultar horarios de misa de cierta parroquia, otro para listar eventos públicos, etc., podrían permitir que eventualmente se creen aplicaciones móviles o integraciones (imagina un día conectar la app parroquial con algo como Appostolica u otros servicios diocesanos). Si bien no es prioridad inmediata, una arquitectura API-centric te permitirá crecer en el futuro sin rehacer lo construido. Muchos sistemas modernos de iglesia (p. ej. Planning Center) ofrecen APIs para integrar con otras herramientas, lo cual agrega valor a largo plazo.
+
+En resumen, la arquitectura propuesta busca equilibrar la simplicidad (para poder desarrollar y adoptar pronto en parroquias pequeñas) con la estructura necesaria para escalar a más usuarios y funciones. Empezar con buenas prácticas de modularidad, seguridad y documentación ahorrará tiempo cuando se quiera evolucionar el proyecto.
