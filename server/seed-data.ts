@@ -1,6 +1,18 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { feligreses, sacramentos, grupos, miembrosGrupo, eventos, voluntarios } from "@shared/schema";
+import { 
+  feligreses, 
+  sacramentos, 
+  grupos, 
+  miembrosGrupo, 
+  eventos, 
+  voluntarios,
+  categoriasFinancieras,
+  transacciones,
+  articulosInventario,
+  movimientosInventario,
+  prestamos
+} from "@shared/schema";
 import * as schema from "@shared/schema";
 
 const sql = neon(process.env.DATABASE_URL!);
@@ -11,6 +23,11 @@ export async function seedDatabase() {
 
   try {
     // Limpiar datos existentes (excepto usuarios)
+    await db.delete(prestamos);
+    await db.delete(movimientosInventario);
+    await db.delete(transacciones);
+    await db.delete(articulosInventario);
+    await db.delete(categoriasFinancieras);
     await db.delete(voluntarios);
     await db.delete(miembrosGrupo);
     await db.delete(eventos);
@@ -477,6 +494,529 @@ export async function seedDatabase() {
 
     console.log("✅ Creados voluntarios para eventos");
 
+    // 7. CATEGORÍAS FINANCIERAS
+    console.log("💰 Creando categorías financieras...");
+    const categoriasData = await db.insert(categoriasFinancieras).values([
+      // Ingresos
+      { nombre: "Diezmos", tipo: "ingreso", descripcion: "Diezmos de feligreses" },
+      { nombre: "Donativos", tipo: "ingreso", descripcion: "Donativos y ofrendas especiales" },
+      { nombre: "Eventos", tipo: "ingreso", descripcion: "Ingresos por eventos (kermés, rifas, etc.)" },
+      { nombre: "Sacramentos", tipo: "ingreso", descripcion: "Limosnas por sacramentos" },
+      { nombre: "Misas", tipo: "ingreso", descripcion: "Limosnas por misas" },
+      
+      // Egresos
+      { nombre: "Mantenimiento", tipo: "egreso", descripcion: "Mantenimiento del templo y edificios" },
+      { nombre: "Servicios", tipo: "egreso", descripcion: "Agua, luz, teléfono, internet" },
+      { nombre: "Suministros", tipo: "egreso", descripcion: "Suministros litúrgicos y de oficina" },
+      { nombre: "Caridad", tipo: "egreso", descripcion: "Obras de caridad y ayuda social" },
+      { nombre: "Catequesis", tipo: "egreso", descripcion: "Material para catequesis" },
+      { nombre: "Personal", tipo: "egreso", descripcion: "Salarios y prestaciones" },
+    ]).returning();
+
+    console.log(`✅ Creadas ${categoriasData.length} categorías financieras`);
+
+    // 8. TRANSACCIONES
+    console.log("📝 Creando transacciones financieras...");
+    const transaccionesData = await db.insert(transacciones).values([
+      // Ingresos - Noviembre
+      {
+        tipo: "ingreso",
+        monto: "8500.00",
+        fecha: "2025-11-03",
+        categoriaId: categoriasData[0].id,
+        categoriaNombre: "Diezmos",
+        metodoPago: "efectivo",
+        descripcion: "Diezmos dominicales - 1er domingo noviembre",
+      },
+      {
+        tipo: "ingreso",
+        monto: "12000.00",
+        fecha: "2025-11-10",
+        categoriaId: categoriasData[0].id,
+        categoriaNombre: "Diezmos",
+        metodoPago: "efectivo",
+        descripcion: "Diezmos dominicales - 2do domingo noviembre",
+      },
+      {
+        tipo: "ingreso",
+        monto: "15000.00",
+        fecha: "2025-11-09",
+        categoriaId: categoriasData[2].id,
+        categoriaNombre: "Eventos",
+        metodoPago: "efectivo",
+        descripcion: "Kermés dominical - recaudación total",
+      },
+      {
+        tipo: "ingreso",
+        monto: "3500.00",
+        fecha: "2025-11-05",
+        categoriaId: categoriasData[1].id,
+        categoriaNombre: "Donativos",
+        metodoPago: "transferencia",
+        descripcion: "Donativo familia García para restauración de imagen",
+        referencia: "TRANS-2025-001",
+      },
+      {
+        tipo: "ingreso",
+        monto: "2000.00",
+        fecha: "2025-11-07",
+        categoriaId: categoriasData[3].id,
+        categoriaNombre: "Sacramentos",
+        metodoPago: "efectivo",
+        descripcion: "Limosnas por bautismos (4 celebraciones)",
+      },
+      {
+        tipo: "ingreso",
+        monto: "1500.00",
+        fecha: "2025-11-08",
+        categoriaId: categoriasData[4].id,
+        categoriaNombre: "Misas",
+        metodoPago: "efectivo",
+        descripcion: "Misas gregorianas solicitadas",
+      },
+
+      // Ingresos - Octubre
+      {
+        tipo: "ingreso",
+        monto: "9200.00",
+        fecha: "2025-10-06",
+        categoriaId: categoriasData[0].id,
+        categoriaNombre: "Diezmos",
+        metodoPago: "efectivo",
+        descripcion: "Diezmos dominicales - 1er domingo octubre",
+      },
+      {
+        tipo: "ingreso",
+        monto: "10500.00",
+        fecha: "2025-10-13",
+        categoriaId: categoriasData[0].id,
+        categoriaNombre: "Diezmos",
+        metodoPago: "efectivo",
+        descripcion: "Diezmos dominicales - 2do domingo octubre",
+      },
+      {
+        tipo: "ingreso",
+        monto: "25000.00",
+        fecha: "2025-10-20",
+        categoriaId: categoriasData[2].id,
+        categoriaNombre: "Eventos",
+        metodoPago: "mixto",
+        descripcion: "Gran kermés anual - Octubre Rosa",
+      },
+
+      // Egresos - Noviembre
+      {
+        tipo: "egreso",
+        monto: "4200.00",
+        fecha: "2025-11-01",
+        categoriaId: categoriasData[6].id,
+        categoriaNombre: "Servicios",
+        metodoPago: "transferencia",
+        descripcion: "Pago de luz - octubre 2025",
+        referencia: "CFE-OCT-2025",
+      },
+      {
+        tipo: "egreso",
+        monto: "1800.00",
+        fecha: "2025-11-01",
+        categoriaId: categoriasData[6].id,
+        categoriaNombre: "Servicios",
+        metodoPago: "transferencia",
+        descripcion: "Pago de agua - octubre 2025",
+        referencia: "SAPAG-OCT-2025",
+      },
+      {
+        tipo: "egreso",
+        monto: "850.00",
+        fecha: "2025-11-02",
+        categoriaId: categoriasData[6].id,
+        categoriaNombre: "Servicios",
+        metodoPago: "efectivo",
+        descripcion: "Teléfono e internet - octubre 2025",
+      },
+      {
+        tipo: "egreso",
+        monto: "12000.00",
+        fecha: "2025-11-05",
+        categoriaId: categoriasData[5].id,
+        categoriaNombre: "Mantenimiento",
+        metodoPago: "cheque",
+        descripcion: "Reparación de goteras en techo del templo",
+        referencia: "CHQ-456",
+      },
+      {
+        tipo: "egreso",
+        monto: "3500.00",
+        fecha: "2025-11-04",
+        categoriaId: categoriasData[7].id,
+        categoriaNombre: "Suministros",
+        metodoPago: "efectivo",
+        descripcion: "Velas, incienso, vino y hostias para noviembre",
+      },
+      {
+        tipo: "egreso",
+        monto: "2000.00",
+        fecha: "2025-11-06",
+        categoriaId: categoriasData[8].id,
+        categoriaNombre: "Caridad",
+        metodoPago: "efectivo",
+        descripcion: "Despensas para familias necesitadas - 15 despensas",
+      },
+      {
+        tipo: "egreso",
+        monto: "1200.00",
+        fecha: "2025-11-07",
+        categoriaId: categoriasData[9].id,
+        categoriaNombre: "Catequesis",
+        metodoPago: "efectivo",
+        descripcion: "Libros y material didáctico para Primera Comunión",
+      },
+
+      // Egresos - Octubre
+      {
+        tipo: "egreso",
+        monto: "15000.00",
+        fecha: "2025-10-01",
+        categoriaId: categoriasData[10].id,
+        categoriaNombre: "Personal",
+        metodoPago: "transferencia",
+        descripcion: "Sueldo sacristán y personal de limpieza",
+        referencia: "NOM-OCT-2025",
+      },
+      {
+        tipo: "egreso",
+        monto: "4100.00",
+        fecha: "2025-10-02",
+        categoriaId: categoriasData[6].id,
+        categoriaNombre: "Servicios",
+        metodoPago: "transferencia",
+        descripcion: "Pago de luz - septiembre 2025",
+        referencia: "CFE-SEP-2025",
+      },
+      {
+        tipo: "egreso",
+        monto: "8500.00",
+        fecha: "2025-10-15",
+        categoriaId: categoriasData[5].id,
+        categoriaNombre: "Mantenimiento",
+        metodoPago: "cheque",
+        descripcion: "Pintura exterior del templo - anticipo",
+        referencia: "CHQ-442",
+      },
+    ]).returning();
+
+    console.log(`✅ Creadas ${transaccionesData.length} transacciones`);
+
+    // 9. ARTÍCULOS DE INVENTARIO
+    console.log("📦 Creando artículos de inventario...");
+    const articulosData = await db.insert(articulosInventario).values([
+      // Litúrgicos
+      {
+        nombre: "Velas blancas grandes",
+        categoria: "liturgico",
+        stockActual: "120",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega principal - Estante A",
+        stockMinimo: "50",
+        descripcion: "Velas de 30cm para altar mayor",
+      },
+      {
+        nombre: "Incienso en grano",
+        categoria: "liturgico",
+        stockActual: "15",
+        unidadMedida: "kg",
+        ubicacion: "Sacristía - Armario litúrgico",
+        stockMinimo: "5",
+        descripcion: "Incienso natural de alta calidad",
+      },
+      {
+        nombre: "Vino para consagrar",
+        categoria: "liturgico",
+        stockActual: "8",
+        unidadMedida: "litros",
+        ubicacion: "Sacristía - Refrigerador",
+        stockMinimo: "3",
+        descripcion: "Vino tinto para eucaristía",
+      },
+      {
+        nombre: "Hostias grandes",
+        categoria: "liturgico",
+        stockActual: "500",
+        unidadMedida: "piezas",
+        ubicacion: "Sacristía - Cajón especial",
+        stockMinimo: "100",
+        descripcion: "Hostias de 7.5cm para consagración",
+      },
+      {
+        nombre: "Hostias pequeñas",
+        categoria: "liturgico",
+        stockActual: "3000",
+        unidadMedida: "piezas",
+        ubicacion: "Sacristía - Cajón especial",
+        stockMinimo: "500",
+        descripcion: "Hostias para comunión de fieles",
+      },
+
+      // Oficina
+      {
+        nombre: "Papel bond carta",
+        categoria: "oficina",
+        stockActual: "25",
+        unidadMedida: "paquetes",
+        ubicacion: "Oficina parroquial - Almacén",
+        stockMinimo: "10",
+        descripcion: "Paquetes de 500 hojas",
+      },
+      {
+        nombre: "Tinta para impresora",
+        categoria: "oficina",
+        stockActual: "6",
+        unidadMedida: "cartuchos",
+        ubicacion: "Oficina parroquial - Escritorio",
+        stockMinimo: "2",
+        descripcion: "Cartuchos HP 664 negro y color",
+      },
+      {
+        nombre: "Carpetas tamaño oficio",
+        categoria: "oficina",
+        stockActual: "50",
+        unidadMedida: "piezas",
+        ubicacion: "Oficina parroquial - Estante",
+        stockMinimo: "20",
+        descripcion: "Carpetas para archivo parroquial",
+      },
+
+      // Mantenimiento
+      {
+        nombre: "Focos LED 15W",
+        categoria: "mantenimiento",
+        stockActual: "30",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega principal - Estante B",
+        stockMinimo: "10",
+        descripcion: "Focos para iluminación del templo",
+      },
+      {
+        nombre: "Escobas",
+        categoria: "mantenimiento",
+        stockActual: "8",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega de limpieza",
+        stockMinimo: "3",
+      },
+      {
+        nombre: "Trapeadores",
+        categoria: "mantenimiento",
+        stockActual: "6",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega de limpieza",
+        stockMinimo: "2",
+      },
+      {
+        nombre: "Cloro",
+        categoria: "mantenimiento",
+        stockActual: "12",
+        unidadMedida: "litros",
+        ubicacion: "Bodega de limpieza",
+        stockMinimo: "5",
+        descripcion: "Cloro para limpieza de baños",
+      },
+
+      // Catequesis
+      {
+        nombre: "Libros de Primera Comunión",
+        categoria: "catequesis",
+        stockActual: "45",
+        unidadMedida: "libros",
+        ubicacion: "Salón de catequesis - Estante 1",
+        stockMinimo: "20",
+        descripcion: "Serie 'Encuentro con Jesús' para niños",
+      },
+      {
+        nombre: "Biblias para niños",
+        categoria: "catequesis",
+        stockActual: "20",
+        unidadMedida: "libros",
+        ubicacion: "Salón de catequesis - Estante 1",
+        stockMinimo: "10",
+        descripcion: "Biblias ilustradas para catequesis infantil",
+      },
+      {
+        nombre: "Lápices de colores",
+        categoria: "catequesis",
+        stockActual: "30",
+        unidadMedida: "cajas",
+        ubicacion: "Salón de catequesis - Armario",
+        stockMinimo: "15",
+        descripcion: "Cajas de 12 colores",
+      },
+
+      // Otros
+      {
+        nombre: "Sillas plegables",
+        categoria: "mobiliario",
+        stockActual: "150",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega principal - Zona trasera",
+        stockMinimo: "100",
+        descripcion: "Para eventos especiales",
+      },
+      {
+        nombre: "Mesas plegables",
+        categoria: "mobiliario",
+        stockActual: "25",
+        unidadMedida: "piezas",
+        ubicacion: "Bodega principal - Zona trasera",
+        stockMinimo: "15",
+        descripcion: "Mesas rectangulares 1.80m",
+      },
+    ]).returning();
+
+    console.log(`✅ Creados ${articulosData.length} artículos`);
+
+    // 10. MOVIMIENTOS DE INVENTARIO
+    console.log("📊 Creando movimientos de inventario...");
+    await db.insert(movimientosInventario).values([
+      // Entradas
+      {
+        articuloId: articulosData[0].id,
+        articuloNombre: "Velas blancas grandes",
+        tipo: "entrada",
+        cantidad: "100",
+        fecha: "2025-10-15",
+        motivo: "compra",
+        registradoPorNombre: "Rosa Elena Díaz Castillo",
+        notas: "Compra mayoreo - Proveeduría San José",
+      },
+      {
+        articuloId: articulosData[1].id,
+        articuloNombre: "Incienso en grano",
+        tipo: "entrada",
+        cantidad: "10",
+        fecha: "2025-10-20",
+        motivo: "compra",
+        registradoPorNombre: "Carlos Jiménez Morales",
+        notas: "Stock para temporada de Adviento",
+      },
+      {
+        articuloId: articulosData[5].id,
+        articuloNombre: "Papel bond carta",
+        tipo: "entrada",
+        cantidad: "20",
+        fecha: "2025-11-01",
+        motivo: "compra",
+        registradoPorNombre: "María García López",
+        notas: "Para oficina parroquial",
+      },
+      {
+        articuloId: articulosData[12].id,
+        articuloNombre: "Libros de Primera Comunión",
+        tipo: "entrada",
+        cantidad: "30",
+        fecha: "2025-10-25",
+        motivo: "donacion",
+        registradoPorNombre: "María García López",
+        notas: "Donación de editorial Arquidiócesis",
+      },
+
+      // Salidas
+      {
+        articuloId: articulosData[0].id,
+        articuloNombre: "Velas blancas grandes",
+        tipo: "salida",
+        cantidad: "20",
+        fecha: "2025-11-05",
+        motivo: "uso_liturgico",
+        registradoPorNombre: "Carlos Jiménez Morales",
+        notas: "Consumo semanal para misas",
+      },
+      {
+        articuloId: articulosData[4].id,
+        articuloNombre: "Hostias pequeñas",
+        tipo: "salida",
+        cantidad: "500",
+        fecha: "2025-11-03",
+        motivo: "uso_liturgico",
+        registradoPorNombre: "Carlos Jiménez Morales",
+        notas: "Misas dominicales - noviembre semana 1",
+      },
+      {
+        articuloId: articulosData[8].id,
+        articuloNombre: "Focos LED 15W",
+        tipo: "salida",
+        cantidad: "5",
+        fecha: "2025-11-02",
+        motivo: "uso_liturgico",
+        registradoPorNombre: "Francisco Ortiz Vargas",
+        notas: "Reemplazo focos quemados en nave principal",
+      },
+      {
+        articuloId: articulosData[12].id,
+        articuloNombre: "Libros de Primera Comunión",
+        tipo: "salida",
+        cantidad: "25",
+        fecha: "2025-11-04",
+        motivo: "uso_liturgico",
+        registradoPorNombre: "María García López",
+        notas: "Entregados a catequistas para nuevo ciclo",
+      },
+    ]).returning();
+
+    console.log("✅ Creados movimientos de inventario");
+
+    // 11. PRÉSTAMOS
+    console.log("🤝 Creando préstamos de artículos...");
+    await db.insert(prestamos).values([
+      {
+        articuloId: articulosData[15].id,
+        articuloNombre: "Sillas plegables",
+        cantidad: "50",
+        prestatarioNombre: "Juan Hernández Ruiz",
+        prestatarioTelefono: "477-234-5678",
+        fechaPrestamo: "2025-11-08",
+        fechaDevolucionProgramada: "2025-11-10",
+        motivo: "Retiro del Grupo Juvenil",
+        estado: "prestado",
+      },
+      {
+        articuloId: articulosData[16].id,
+        articuloNombre: "Mesas plegables",
+        cantidad: "10",
+        prestatarioNombre: "Juan Hernández Ruiz",
+        prestatarioTelefono: "477-234-5678",
+        fechaPrestamo: "2025-11-08",
+        fechaDevolucionProgramada: "2025-11-10",
+        motivo: "Retiro del Grupo Juvenil",
+        estado: "prestado",
+      },
+      {
+        articuloId: articulosData[15].id,
+        articuloNombre: "Sillas plegables",
+        cantidad: "100",
+        prestatarioNombre: "Guadalupe Martínez Torres",
+        prestatarioTelefono: "477-345-6789",
+        fechaPrestamo: "2025-10-28",
+        fechaDevolucionProgramada: "2025-10-29",
+        fechaDevolucionReal: "2025-10-29",
+        motivo: "Kermés dominical",
+        estado: "devuelto",
+      },
+      {
+        articuloId: articulosData[16].id,
+        articuloNombre: "Mesas plegables",
+        cantidad: "20",
+        prestatarioNombre: "Guadalupe Martínez Torres",
+        prestatarioTelefono: "477-345-6789",
+        fechaPrestamo: "2025-10-28",
+        fechaDevolucionProgramada: "2025-10-29",
+        fechaDevolucionReal: "2025-10-29",
+        motivo: "Kermés dominical",
+        estado: "devuelto",
+      },
+    ]).returning();
+
+    console.log("✅ Creados préstamos de artículos");
+
     console.log("\n🎉 ¡Seed completado exitosamente!");
     console.log("📊 Resumen:");
     console.log(`   - ${feligresesData.length} feligreses`);
@@ -485,6 +1025,11 @@ export async function seedDatabase() {
     console.log(`   - 14 miembros asignados a grupos`);
     console.log(`   - ${eventosData.length} eventos programados`);
     console.log(`   - 13 voluntarios registrados`);
+    console.log(`   - ${categoriasData.length} categorías financieras`);
+    console.log(`   - ${transaccionesData.length} transacciones`);
+    console.log(`   - ${articulosData.length} artículos de inventario`);
+    console.log("   - 8 movimientos de inventario");
+    console.log("   - 4 préstamos de artículos");
 
   } catch (error) {
     console.error("❌ Error durante el seed:", error);
