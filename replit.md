@@ -2,7 +2,9 @@
 
 ## Overview
 
-This is an offline-first parish management application built for Catholic parishes to manage their community, sacraments, groups, events, and volunteers. The system is designed to work without internet connectivity and prioritizes accessibility, performance on basic devices, and a minimalist, utility-focused interface.
+This is a parish management application built for Catholic parishes to manage their community, sacraments, groups, events, and volunteers. The system prioritizes accessibility, performance on basic devices, and a minimalist, utility-focused interface.
+
+**Current connectivity status:** Web application requiring PostgreSQL database connection. **Offline-first features (PWA, USB backups, synchronization) are planned but not yet implemented** - see docs/PENDIENTES.md for roadmap.
 
 The application serves as a comprehensive administrative tool for parish staff (priests, coordinators, volunteers) to maintain digital records of parishioners, sacramental history, pastoral groups, events, and volunteer coordination.
 
@@ -62,13 +64,26 @@ Preferred communication style: Simple, everyday language.
 - **MiembroGrupo**: Many-to-many relationship between parishioners and groups
 - **Eventos** (Events): Parish calendar and event management
 - **Voluntarios** (Volunteers): Event volunteer coordination
+- **CategoriasFinancieras** (Financial Categories): Income and expense categories for accounting
+- **Transacciones** (Transactions): Financial transactions with payment methods and references
+- **ArticulosInventario** (Inventory Items): Liturgical supplies, office materials, furniture tracking
+- **MovimientosInventario** (Inventory Movements): Entry/exit movements with automatic stock updates
+- **Prestamos** (Loans): Item loans to parishioners with scheduled return dates
 
-**Offline-First Considerations**: Architecture prepared for local-first data storage with eventual database synchronization capability.
+**Offline-First Considerations**: 
+- **Current state:** Application requires internet connection to PostgreSQL database
+- **Planned (not implemented):** Architecture will support PWA with service workers, IndexedDB local storage, and eventual synchronization
+- **See docs/PENDIENTES.md** for detailed offline roadmap (USB backups, sync between parishes, conflict resolution)
 
 **Recent Implementations**:
 - ✅ PostgreSQL database with Drizzle ORM (November 2025)
 - ✅ PDF certificate generation with PDFKit for all sacrament types (November 2025)
 - ✅ Production-ready authentication system with express-session and connect-pg-simple (November 2025)
+- ✅ Financial and inventory modules complete (Phases 2-3, November 2025)
+- ✅ Dashboard financiero with Recharts visualizations (November 2025)
+- ✅ CSV export system with UTF-8 BOM support (November 2025)
+- ✅ Complete seed data with 19 transactions, 17 inventory items, 4 loans (November 2025)
+- ✅ Bug fix: Stock auto-update in inventory movements (November 10, 2025)
 
 ### Authentication and Authorization
 
@@ -141,7 +156,29 @@ Preferred communication style: Simple, everyday language.
 
 1. **Monorepo Structure**: Client, server, and shared code in a single repository with path aliases for clean imports
 2. **Shared Type Safety**: Database schemas, Zod validators, and TypeScript types shared between frontend and backend via the `/shared` directory
-3. **Offline-First Design**: Application architecture supports working without internet connectivity, with data export/import functionality for backup
+3. **Future Offline-First Design**: Architecture prepared to support working without internet connectivity (planned: PWA, service workers, IndexedDB, USB backups - see docs/PENDIENTES.md)
 4. **Production-Ready Authentication**: Session-based authentication with role-based access control (parroco, coordinador, voluntario) and secure password management
 5. **Spanish Language**: All UI text, comments, and documentation in Spanish to match the target user base
 6. **Performance Priority**: Minimal dependencies, no custom fonts, system-level design choices optimized for low-end devices
+
+## Project Documentation
+
+**Comprehensive documentation is available in the `/docs` folder:**
+
+- **[README.md](./docs/README.md)** - Project overview, quick start, and feature summary
+- **[ESTADO-ACTUAL.md](./docs/ESTADO-ACTUAL.md)** - Complete status of all implemented features (Phases 1-3)
+- **[PENDIENTES.md](./docs/PENDIENTES.md)** - Roadmap of pending features and future enhancements
+- **[GUIA-DESARROLLO.md](./docs/GUIA-DESARROLLO.md)** - Developer setup guide, conventions, and troubleshooting
+- **[ARQUITECTURA.md](./docs/ARQUITECTURA.md)** - Technical architecture, design patterns, and decisions
+- **[API-ENDPOINTS.md](./docs/API-ENDPOINTS.md)** - Complete REST API documentation with examples
+
+**For new developers joining the project:**
+Start with [docs/README.md](./docs/README.md) for an overview, then read [docs/GUIA-DESARROLLO.md](./docs/GUIA-DESARROLLO.md) to set up your environment.
+
+**Latest Updates (November 10, 2025)**:
+- Complete financial accounting system with 11 categories and transaction management
+- Inventory control with automatic stock updates on movements
+- Dashboard financiero with interactive charts (bar, pie, line graphs)
+- CSV export functionality for transactions, reports, and inventory
+- Comprehensive seed data for demonstration (70+ records across 12 tables)
+- Bug fix: POST /api/movimientos-inventario now correctly updates article stock
