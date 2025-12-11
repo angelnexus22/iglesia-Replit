@@ -23,6 +23,7 @@ import Contabilidad from "@/pages/contabilidad";
 import DashboardFinanciero from "@/pages/dashboard-financiero";
 import Inventario from "@/pages/inventario";
 import Respaldo from "@/pages/respaldo";
+import Configuracion from "@/pages/configuracion";
 import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
 
@@ -87,6 +88,9 @@ function Router() {
       </Route>
       <Route path="/respaldo">
         {() => <ProtectedRoute component={Respaldo} />}
+      </Route>
+      <Route path="/configuracion">
+        {() => <ProtectedRoute component={Configuracion} />}
       </Route>
       <Route component={NotFound} />
     </Switch>

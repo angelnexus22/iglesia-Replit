@@ -339,3 +339,26 @@ export const insertPrestamoSchema = createInsertSchema(prestamos).omit({
 
 export type InsertPrestamo = z.infer<typeof insertPrestamoSchema>;
 export type Prestamo = typeof prestamos.$inferSelect;
+
+// ============================================
+// CONFIGURACIÓN DE LA PARROQUIA
+// ============================================
+export const configuracionParroquia = pgTable("configuracion_parroquia", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  nombreParroquia: text("nombre_parroquia").notNull(),
+  direccion: text("direccion"),
+  telefono: text("telefono"),
+  email: text("email"),
+  nombreParroco: text("nombre_parroco"),
+  diocesis: text("diocesis"),
+  vicaria: text("vicaria"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertConfiguracionParroquiaSchema = createInsertSchema(configuracionParroquia).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertConfiguracionParroquia = z.infer<typeof insertConfiguracionParroquiaSchema>;
+export type ConfiguracionParroquia = typeof configuracionParroquia.$inferSelect;

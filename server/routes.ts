@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import {
@@ -15,10 +15,41 @@ import {
   insertArticuloInventarioSchema,
   insertMovimientoInventarioSchema,
   insertPrestamoSchema,
+  insertConfiguracionParroquiaSchema,
 } from "@shared/schema";
 import bcrypt from "bcrypt";
-import { generateCertificadoPDF } from "./utils/certificadoPDF";
+import { generarCertificadoPDF } from "./utils/certificadoPDF";
 import { seedDatabase } from "./seed-data";
+
+// ============================================
+// MIDDLEWARES DE AUTENTICACIÓN Y PERMISOS
+// ============================================
+
+// Middleware para verificar autenticación
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session?.userId) {
+    return res.status(401).json({ error: "No autenticado" });
+  }
+  next();
+}
+
+// Middleware para verificar roles específicos
+function requireRole(...roles: string[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "No autenticado" });
+    }
+    if (!req.session.userRole || !roles.includes(req.session.userRole)) {
+      return res.status(403).json({ error: "No tiene permisos para esta acción" });
+    }
+    next();
+  };
+}
+
+// Roles disponibles
+const PARROCO = "parroco";
+const COORDINADOR = "coordinador";
+const VOLUNTARIO = "voluntario";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ============================================
@@ -247,8 +278,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Sacramento no encontrado" });
       }
 
-      const { generarCertificadoPDF } = await import("./utils/certificadoPDF");
-      const doc = generarCertificadoPDF(sacramento);
+      // Obtener configuración de la parroquia para el certificado
+      const configParroquia = await storage.getConfiguracionParroquia();
+
+      const doc = generarCertificadoPDF(sacramento, configParroquia);
 
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
@@ -779,7 +812,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : stockActual - cantidad;
         
         await storage.updateArticuloInventario(data.articuloId, {
-          stockActual: nuevoStock.toString()
+          nombre: articulo.nombre,
+          categoria: articulo.categoria,
+          unidadMedida: articulo.unidadMedida,
+          descripcion: articulo.descripcion,
+          stockActual: nuevoStock.toString(),
+          stockMinimo: articulo.stockMinimo,
+          ubicacion: articulo.ubicacion,
+          valorUnitario: articulo.valorUnitario,
+          activo: articulo.activo,
         });
       }
       
@@ -854,6 +895,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Error al eliminar préstamo" });
+    }
+  });
+
+  // ============================================
+  // CONFIGURACIÓN DE PARROQUIA
+  // ============================================
+  app.get("/api/configuracion-parroquia", requireAuth, async (req, res) => {
+    try {
+      const config = await storage.getConfiguracionParroquia();
+      res.json(config || null);
+    } catch (error) {
+      res.status(500).json({ error: "Error al obtener configuración de parroquia" });
+    }
+  });
+
+  app.post("/api/configuracion-parroquia", requireRole(PARROCO), async (req, res) => {
+    try {
+      const data = insertConfiguracionParroquiaSchema.parse(req.body);
+      const config = await storage.upsertConfiguracionParroquia(data);
+      res.json(config);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message || "Datos inválidos" });
     }
   });
 

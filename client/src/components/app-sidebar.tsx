@@ -1,4 +1,5 @@
-import { Home, Users, BookOpen, UsersRound, Calendar, Heart, Database, DollarSign, Package, BarChart3 } from "lucide-react";
+import { Home, Users, BookOpen, UsersRound, Calendar, Heart, Database, DollarSign, Package, BarChart3, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -48,6 +49,8 @@ const menuItems = [
 
 export function AppSidebar() {
   const [location] = useLocation();
+  const { user } = useAuth();
+  const isPárroco = user?.rol === "parroco";
 
   return (
     <Sidebar>
@@ -118,6 +121,16 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              {isPárroco && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={location === "/configuracion"}>
+                    <Link href="/configuracion" data-testid="link-configuracion">
+                      <Settings className="w-5 h-5" />
+                      <span className="text-base">Configuración</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

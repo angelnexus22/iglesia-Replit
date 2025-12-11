@@ -1,7 +1,18 @@
 import PDFDocument from "pdfkit";
-import type { Sacramento } from "@shared/schema";
+import type { Sacramento, ConfiguracionParroquia } from "@shared/schema";
 
-export function generarCertificadoPDF(sacramento: Sacramento): PDFKit.PDFDocument {
+interface ConfigParroquia {
+  nombreParroquia?: string | null;
+  direccion?: string | null;
+  nombreParroco?: string | null;
+  diocesis?: string | null;
+}
+
+export function generarCertificadoPDF(sacramento: Sacramento, config?: ConfigParroquia | null): PDFKit.PDFDocument {
+  const nombreParroquia = config?.nombreParroquia || "Parroquia";
+  const nombreParroco = config?.nombreParroco || "Párroco";
+  const direccion = config?.direccion || "";
+  const diocesis = config?.diocesis || "";
   const doc = new PDFDocument({
     size: "A4",
     layout: "portrait",
@@ -35,11 +46,19 @@ export function generarCertificadoPDF(sacramento: Sacramento): PDFKit.PDFDocumen
     .fillColor("#8B4513")
     .text("✝", centerX - 20, 200);
 
-  // Texto descriptivo
+  // Nombre de la parroquia y diócesis
+  if (diocesis) {
+    doc.fontSize(11)
+      .font("Helvetica")
+      .fillColor("#555555")
+      .text(diocesis, 0, 250, { align: "center" });
+  }
+
+  // Texto descriptivo con nombre de parroquia
   doc.fontSize(14)
     .font("Helvetica")
     .fillColor("#333333")
-    .text("La Parroquia certifica que:", 0, 270, { align: "center" });
+    .text(`${nombreParroquia} certifica que:`, 0, 270, { align: "center" });
 
   // Nombre del feligrés
   doc.fontSize(28)
@@ -100,7 +119,13 @@ export function generarCertificadoPDF(sacramento: Sacramento): PDFKit.PDFDocumen
 
   doc.fontSize(11)
     .fillColor("#555555")
-    .text("Párroco", 0, firmaY + 20, { align: "center" });
+    .text(nombreParroco, 0, firmaY + 20, { align: "center" });
+  
+  if (direccion) {
+    doc.fontSize(9)
+      .fillColor("#777777")
+      .text(direccion, 0, firmaY + 40, { align: "center" });
+  }
 
   // Pie de página con fecha de emisión
   doc.fontSize(9)

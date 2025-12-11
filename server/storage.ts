@@ -12,7 +12,8 @@ import type {
   Presupuesto, InsertPresupuesto,
   ArticuloInventario, InsertArticuloInventario,
   MovimientoInventario, InsertMovimientoInventario,
-  Prestamo, InsertPrestamo
+  Prestamo, InsertPrestamo,
+  ConfiguracionParroquia, InsertConfiguracionParroquia
 } from "@shared/schema";
 
 export interface IStorage {
@@ -105,6 +106,10 @@ export interface IStorage {
   createPrestamo(prestamo: InsertPrestamo): Promise<Prestamo>;
   updatePrestamo(id: string, prestamo: InsertPrestamo): Promise<Prestamo | undefined>;
   deletePrestamo(id: string): Promise<boolean>;
+
+  // Configuración de Parroquia
+  getConfiguracionParroquia(): Promise<ConfiguracionParroquia | undefined>;
+  upsertConfiguracionParroquia(config: InsertConfiguracionParroquia): Promise<ConfiguracionParroquia>;
 
   // Export/Import
   exportAll(): Promise<{
@@ -379,6 +384,116 @@ export class MemStorage implements IStorage {
 
   async deleteVoluntario(id: string): Promise<boolean> {
     return this.voluntarios.delete(id);
+  }
+
+  // Categorías Financieras (stub - MemStorage no implementa estas funciones)
+  async getAllCategoriasFinancieras(): Promise<CategoriaFinanciera[]> {
+    return [];
+  }
+  async getCategoriaFinanciera(id: string): Promise<CategoriaFinanciera | undefined> {
+    return undefined;
+  }
+  async createCategoriaFinanciera(categoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera> {
+    throw new Error("MemStorage no soporta categorías financieras");
+  }
+  async updateCategoriaFinanciera(id: string, categoria: InsertCategoriaFinanciera): Promise<CategoriaFinanciera | undefined> {
+    return undefined;
+  }
+  async deleteCategoriaFinanciera(id: string): Promise<boolean> {
+    return false;
+  }
+
+  // Transacciones (stub)
+  async getAllTransacciones(): Promise<Transaccion[]> {
+    return [];
+  }
+  async getTransaccion(id: string): Promise<Transaccion | undefined> {
+    return undefined;
+  }
+  async createTransaccion(transaccion: InsertTransaccion): Promise<Transaccion> {
+    throw new Error("MemStorage no soporta transacciones");
+  }
+  async updateTransaccion(id: string, transaccion: InsertTransaccion): Promise<Transaccion | undefined> {
+    return undefined;
+  }
+  async deleteTransaccion(id: string): Promise<boolean> {
+    return false;
+  }
+
+  // Presupuestos (stub)
+  async getAllPresupuestos(): Promise<Presupuesto[]> {
+    return [];
+  }
+  async getPresupuesto(id: string): Promise<Presupuesto | undefined> {
+    return undefined;
+  }
+  async createPresupuesto(presupuesto: InsertPresupuesto): Promise<Presupuesto> {
+    throw new Error("MemStorage no soporta presupuestos");
+  }
+  async updatePresupuesto(id: string, presupuesto: InsertPresupuesto): Promise<Presupuesto | undefined> {
+    return undefined;
+  }
+  async deletePresupuesto(id: string): Promise<boolean> {
+    return false;
+  }
+
+  // Artículos Inventario (stub)
+  async getAllArticulosInventario(): Promise<ArticuloInventario[]> {
+    return [];
+  }
+  async getArticuloInventario(id: string): Promise<ArticuloInventario | undefined> {
+    return undefined;
+  }
+  async createArticuloInventario(articulo: InsertArticuloInventario): Promise<ArticuloInventario> {
+    throw new Error("MemStorage no soporta inventario");
+  }
+  async updateArticuloInventario(id: string, articulo: InsertArticuloInventario): Promise<ArticuloInventario | undefined> {
+    return undefined;
+  }
+  async deleteArticuloInventario(id: string): Promise<boolean> {
+    return false;
+  }
+
+  // Movimientos Inventario (stub)
+  async getAllMovimientosInventario(): Promise<MovimientoInventario[]> {
+    return [];
+  }
+  async getMovimientoInventario(id: string): Promise<MovimientoInventario | undefined> {
+    return undefined;
+  }
+  async getMovimientosPorArticulo(articuloId: string): Promise<MovimientoInventario[]> {
+    return [];
+  }
+  async createMovimientoInventario(movimiento: InsertMovimientoInventario): Promise<MovimientoInventario> {
+    throw new Error("MemStorage no soporta movimientos de inventario");
+  }
+
+  // Préstamos (stub)
+  async getAllPrestamos(): Promise<Prestamo[]> {
+    return [];
+  }
+  async getPrestamo(id: string): Promise<Prestamo | undefined> {
+    return undefined;
+  }
+  async getPrestamosPorEstado(estado: string): Promise<Prestamo[]> {
+    return [];
+  }
+  async createPrestamo(prestamo: InsertPrestamo): Promise<Prestamo> {
+    throw new Error("MemStorage no soporta préstamos");
+  }
+  async updatePrestamo(id: string, prestamo: InsertPrestamo): Promise<Prestamo | undefined> {
+    return undefined;
+  }
+  async deletePrestamo(id: string): Promise<boolean> {
+    return false;
+  }
+
+  // Configuración de Parroquia (stub)
+  async getConfiguracionParroquia(): Promise<ConfiguracionParroquia | undefined> {
+    return undefined;
+  }
+  async upsertConfiguracionParroquia(config: InsertConfiguracionParroquia): Promise<ConfiguracionParroquia> {
+    throw new Error("MemStorage no soporta configuración de parroquia");
   }
 
   // Export/Import
@@ -788,6 +903,26 @@ export class PostgresStorage implements IStorage {
   async deletePrestamo(id: string): Promise<boolean> {
     const result = await this.db.delete(schema.prestamos).where(eq(schema.prestamos.id, id));
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  // Configuración de Parroquia
+  async getConfiguracionParroquia(): Promise<ConfiguracionParroquia | undefined> {
+    const result = await this.db.select().from(schema.configuracionParroquia);
+    return result[0];
+  }
+
+  async upsertConfiguracionParroquia(insertConfig: InsertConfiguracionParroquia): Promise<ConfiguracionParroquia> {
+    const existing = await this.getConfiguracionParroquia();
+    if (existing) {
+      const result = await this.db.update(schema.configuracionParroquia)
+        .set({ ...insertConfig, updatedAt: new Date() })
+        .where(eq(schema.configuracionParroquia.id, existing.id))
+        .returning();
+      return result[0];
+    } else {
+      const result = await this.db.insert(schema.configuracionParroquia).values(insertConfig).returning();
+      return result[0];
+    }
   }
 
   // Export/Import

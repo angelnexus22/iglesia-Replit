@@ -69,6 +69,7 @@ Preferred communication style: Simple, everyday language.
 - **ArticulosInventario** (Inventory Items): Liturgical supplies, office materials, furniture tracking
 - **MovimientosInventario** (Inventory Movements): Entry/exit movements with automatic stock updates
 - **Prestamos** (Loans): Item loans to parishioners with scheduled return dates
+- **ConfiguracionParroquia** (Parish Configuration): Parish name, address, priest name, diocese for certificates
 
 **Offline-First Considerations**: 
 - **Current state:** Application requires internet connection to PostgreSQL database
@@ -84,6 +85,8 @@ Preferred communication style: Simple, everyday language.
 - ✅ CSV export system with UTF-8 BOM support (November 2025)
 - ✅ Complete seed data with 19 transactions, 17 inventory items, 4 loans (November 2025)
 - ✅ Bug fix: Stock auto-update in inventory movements (November 10, 2025)
+- ✅ Parish configuration module with role-based access (December 2025)
+- ✅ Dynamic certificate generation using parish configuration data (December 2025)
 
 ### Authentication and Authorization
 
@@ -114,7 +117,8 @@ Preferred communication style: Simple, everyday language.
 - Three roles: parroco (parish priest), coordinador (coordinator), voluntario (volunteer)
 - Middleware functions available: requireAuth, requireRole
 - Role validation stored in session for fast access
-- Ready for endpoint-level permission enforcement
+- Parish configuration: párroco-only access
+- Certificate generation: Uses stored parish configuration for dynamic data
 
 **Testing**: All authentication flows tested and verified end-to-end including register, login, protected routes, logout, and security measures.
 
